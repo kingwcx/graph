@@ -1,0 +1,15 @@
+{% extends 'admin_nav.html' %}
+
+{% block content %}
+    <div id="main" style="height: 600px;text-align: center">
+        <H2>概念集合</H2>
+        <hr>
+        {% for concept in concepts %}
+            <a>{{ concept.name }}</a>
+        {% endfor %}
+        <div>
+            <a href="{% url "admin:add_node_view" %}" class="btn btn-default btn-md" role="button">添加节点</a>
+            <a href="#" class="btn btn-default btn-md" role="button">添加关系</a>
+        </div>
+    </div>
+{% endblock %}
