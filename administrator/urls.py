@@ -23,8 +23,19 @@ urlpatterns = [
 	path('home/', views.AdminIndexView.as_view(), name='home'),
 
 	path('knowledge_graph/', views.AdminShowNodeView.as_view(), name='knowledge_graph'),
-	path('add_node_view/', views.AdminAddNodeView.as_view(), name='add_node_view'),
+
 	path('load_labels/', views.ajax_lable_list, name='load_labels'),
+
+	path('graph/', views.load_graph, name='load_graph'),
+
+	path('add_node_view/', views.AdminAddNodeView.as_view(), name='add_node_view'),
 	path('add_node/', views.AdminAddNode.as_view(), name='add_node'),
+	path('add_example_view/', views.AdminAddExampleView.as_view(), name='add_example_view'),
+	path('add_example/', views.AdminAddExample.as_view(), name='add_example'),
+
+	path('add_concept_view/', views.AdminAddConceptView.as_view(), name='add_concept_view'),
+	path('add_concept/', views.AdminAddConcept.as_view(), name='add_concept'),
+
+	path('find_node/', views.Find.as_view(), name='find_node'),
 
 ]

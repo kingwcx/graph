@@ -20,6 +20,17 @@
     <link href="{% static 'admin/css/animate.css' %}" rel="stylesheet">
     <link href="{% static 'admin/css/style.css' %}" rel="stylesheet">
 
+    <!-- cytoscape -->
+    <script src="{% static 'cytoscape/cytoscape.min.js' %}"></script>
+
+    <!-- Mainly scripts -->
+    <script src="{% static 'admin/js/popper.min.js' %}"></script>
+    <script src="{% static 'admin/js/bootstrap.js' %}"></script>
+    <script src="{% static 'admin/js/plugins/metisMenu/jquery.metisMenu.js' %}"></script>
+    <script src="{% static 'admin/js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'admin/js/jquery-3.1.1.min.js' %}"></script>
+
+
 </head>
 
 <body>
@@ -262,13 +273,6 @@
 
     </div>
 
-    <!-- Mainly scripts -->
-    <script src="{% static 'admin/js/jquery-3.1.1.min.js' %}"></script>
-    <script src="{% static 'admin/js/popper.min.js' %}"></script>
-    <script src="{% static 'admin/js/bootstrap.js' %}"></script>
-    <script src="{% static 'admin/js/plugins/metisMenu/jquery.metisMenu.js' %}"></script>
-    <script src="{% static 'admin/js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
-
     <!-- Flot -->
     <script src="{% static 'admin/js/plugins/flot/jquery.flot.js' %}"></script>
     <script src="{% static 'admin/js/plugins/flot/jquery.flot.tooltip.min.js' %}"></script>
@@ -298,8 +302,5 @@
 
     <!-- ChartJS-->
     <script src="{% static 'admin/js/plugins/chartJs/Chart.min.js' %}"></script>
-
-    <!-- Toastr -->
-    <script src="{% static 'admin/js/plugins/toastr/toastr.min.js' %}"></script>
 </body>
 </html>

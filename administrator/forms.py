@@ -37,15 +37,25 @@ class RegisterForm(forms.ModelForm):
 		return username
 
 class NodeForm(forms.Form):
-	name = forms.CharField(max_length=12)
+	name = forms.CharField(max_length=12,error_messages={'required':u'名字不能为空'})
 	label = forms.CharField()
-	introduction = forms.CharField()
+	introduction = forms.CharField(error_messages={'required':u'简介不能为空'})
 
 	def clean(self):
 		name = self.cleaned_data.get('name')
 		label = self.cleaned_data.get('label')
 		neo_graph = get_graph()
 		matcher = NodeMatcher(neo_graph)
-		exists = matcher.match(label, name=name).first()
+		exists = matcher.match( label,name=name).first()
 		if exists != None:
 			raise forms.ValidationError("节点:"+ name +"已经存在！")
+
+	def get_errors(self):
+		errors = self.errors.get_json_data()
+		new_errors = {}
+		for key, message_dicts in errors.items():
+			messages = []
+			for message in message_dicts:
+				messages.append(message['message'])
+			new_errors[key] = messages
+		return new_errors

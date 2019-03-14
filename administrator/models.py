@@ -4,6 +4,8 @@ from django.db import models
 # django 自带用户表
 from django.contrib.auth.models import User
 
+#neo4j model
+from py2neo.ogm import *
 
 # 用户扩展表
 class UserExtension(models.Model):
@@ -27,3 +29,20 @@ class UserStudy(models.Model):
 
 	class Meta:
 		db_table = 'study_mid'
+
+
+class Concept(GraphObject):
+	__primarykey__ = "name"
+
+	name = Property()
+	introduction = Property()
+	view_times = Property(0)
+	search_times = Property(0)
+
+
+class Style(Concept):
+	__primarykey__ = "name"
+
+
+
+
