@@ -21,7 +21,8 @@ app_name = 'front'
 urlpatterns = [
 	path('', views.IndexView.as_view(), name='index'),
 	path('search/', views.SearchView.as_view(), name='search'),
-	path('search/action', views.SearchActionView.as_view(), name='search_action'),
-	path('search/result', views.SearchResultView.as_view(), name='search_result'),
+	path('search/action/', views.SearchActionView.as_view(), name='search_action'),
+	path('result/', views.SearchResultView.as_view(), name='search_result'),
+	path('result/error/', views.SearchResultErrorView.as_view(), name='search_result_error'),
 	path('object/', views.ObjectDetailView.as_view(), name='object_detail'),
 ]

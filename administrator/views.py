@@ -39,28 +39,28 @@ class AdminIndexView(View):
 show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
 
 
+#处理返回的节点和边的数据
 def build_node(nodeRecord):
 	data = { "id":str(nodeRecord['id(n)']),
 	         "name": str(nodeRecord['n']['name']),
 	         "label": next(iter(nodeRecord['n'].labels))}
 
 	return {"data": data}
-
-
+#处理返回的节点和边的数据
 def build_edge(relationRecord):
 	data = {"source": str(relationRecord['id(m)']),
 	        "target": str(relationRecord['id(n)']),
 	        "relationship": relationRecord['Type(r)']}
 
 	return {"data": data}
-
+#处理返回的节点和边的数据
 def build_nodes(nodes):
 	result =[]
 	for node in nodes:
 		new = build_node(node)
 		result.append(new)
 	return result
-
+#处理返回的节点和边的数据
 def build_edges(edges):
 	result =[]
 	for edge in edges:
@@ -68,29 +68,42 @@ def build_edges(edges):
 		result.append(new)
 	return result
 
-def load_graph(request):
-	print(request)
+#加载全部节点和边
+def load_graph():
+	#print(request)
 	neo_graph = get_graph()
 	result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
 	result_edges = neo_graph.run('MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)').data()
 	nodes = build_nodes(result_nodes)
 	edges = build_edges(result_edges)
-	print(nodes)
-	return JsonResponse({"nodes": nodes, "edges": edges})
+	return ({"nodes": nodes, "edges": edges})
 
-def load_search_graph(request):
-	pass
+#加载节点边以及周围的边
+def load_search_graph(id):
+	neo_graph = get_graph()
+	results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return m,id(m),Type(r),id(r),n,id(n)").data()
+	edges = build_edges(results)
+	nodes = build_nodes(results)
+
+	data = {"id":str(results[0]['id(m)']),
+	         "name": str(results[0]['m']['name']),
+	         "label": next(iter(results[0]['m'].labels))}
+	node = {"data": data}
+	nodes.append(node)
+
+	return ({"nodes": nodes, "edges": edges})
+
+#使用id查找单个节点信息
+def load_search_node(id):
+	neo_graph = get_graph()
+	results = neo_graph.run("match (n) where id(n)= " + str(id) + " return n").data()
+	print(results[0]['n']['name'])
 
 
 # 展示节点node
 class AdminShowNodeView(View):
 	def get(self, request, *args, **kwargs):
-		neo_graph = get_graph()
-		result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
-		result_edges = neo_graph.run('MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)').data()
-		nodes = build_nodes(result_nodes)
-		edges = build_edges(result_edges)
-		element = json.dumps({"nodes": nodes, "edges": edges})
+		element = json.dumps(load_graph())
 		return render(request, 'admin_nodes.html', context={"labels": show,"element":element})
 
 

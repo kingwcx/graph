@@ -32,13 +32,8 @@ def get_graph():
 class IndexView(View):
 	#new = Basic(name="色彩").save()
 	def get(self,request,*args,**kwargs):
-		neo_graph = get_graph()
-		result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
-		result_edges = neo_graph.run('MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)').data()
-		nodes = build_nodes(result_nodes)
-		edges = build_edges(result_edges)
-		element = json.dumps({"nodes": nodes, "edges": edges})
-		print(element)
+		load_search_node(172)
+		element = json.dumps(load_graph())
 		return render(request, 'index.html',context={'element':element})
 
 #搜索页面
@@ -51,34 +46,30 @@ class SearchActionView(View):
 	def post(self,request,*args,**kwargs):
 		search = request.POST.get("search")
 		if search != "":
-			try:
+			#try:
 				neo_graph = get_graph()
-				# tx = neo_graph.begin()
-				result = neo_graph.run("MATCH (n) WHERE n.name = '"+ search + "'RETURN *,id(n)").data()
-				print(result)
-				matcher = NodeMatcher(neo_graph)
-				result_edit = matcher.match(name=search).first()
-				result_edit["search_times"] += 1
-				neo_graph.push(result_edit)
-				# tx.commit()
-				return redirect(reverse('front:search_result')+ "?name=" + result["n.name"])
-			except:
+				results = neo_graph.run("MATCH (n) WHERE n.name = '"+ search + "'RETURN *,id(n)").data()
+				ids = []
+				for result in results:
+					ids.append(result['id(n)'])
+				print(ids)
+				return render(request, 'result.html',context={'ids':ids})
+			#except:
 				print("没有找到你要的内容!")
-				return redirect(reverse('front:search'))
+				return render(request, 'result_error.html')
 		else:
 			return redirect(reverse('front:search'))
 
 #search结果
 class SearchResultView(View):
-	def post(self, request, *args, **kwargs):
+	def get(self, request, *args, **kwargs):
 		print(request.POST.get('id'))
 		return render(request, 'result.html')
 
 #search error结果
 class SearchResultErrorView(View):
-	def post(self, request, *args, **kwargs):
-		print(request.POST.get('id'))
-		return render(request, 'result.html')
+	def get(self, request, *args, **kwargs):
+		return render(request, 'result_error.html')
 
 #对象详情页面
 class ObjectDetailView(View):

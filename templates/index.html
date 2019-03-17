@@ -9,6 +9,9 @@
         var jq = $.noConflict();
         jq(document).ready(function(){
             var style = [
+                { selector: 'node[label = "Design"]',
+                  css: {'background-color': '#fc33b6', 'content': 'data(name)'}
+                },
                 { selector: 'node[label = "Process"]',
                   css: {'background-color': '#6FB1FC', 'content': 'data(name)'}
                 },
