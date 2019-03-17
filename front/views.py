@@ -12,6 +12,8 @@ from django.core.paginator import Paginator
 from django.views import View
 #json
 import json
+#其他视图函数
+from administrator.views import *
 
 
 def get_graph():
@@ -30,7 +32,14 @@ def get_graph():
 class IndexView(View):
 	#new = Basic(name="色彩").save()
 	def get(self,request,*args,**kwargs):
-		return render(request, 'index.html')
+		neo_graph = get_graph()
+		result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
+		result_edges = neo_graph.run('MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)').data()
+		nodes = build_nodes(result_nodes)
+		edges = build_edges(result_edges)
+		element = json.dumps({"nodes": nodes, "edges": edges})
+		print(element)
+		return render(request, 'index.html',context={'element':element})
 
 #搜索页面
 class SearchView(View):
@@ -45,18 +54,31 @@ class SearchActionView(View):
 			try:
 				neo_graph = get_graph()
 				# tx = neo_graph.begin()
-				matcher = NodeMatcher(neo_graph)
-				result = matcher.match("Concept", name=search).first()
+				result = neo_graph.run("MATCH (n) WHERE n.name = '"+ search + "'RETURN *,id(n)").data()
 				print(result)
-				result["search_times"] += 1
-				neo_graph.push(result)
+				matcher = NodeMatcher(neo_graph)
+				result_edit = matcher.match(name=search).first()
+				result_edit["search_times"] += 1
+				neo_graph.push(result_edit)
 				# tx.commit()
-				return redirect(reverse('front:object_detail')+ "?name=" + result["name"])
+				return redirect(reverse('front:search_result')+ "?name=" + result["n.name"])
 			except:
 				print("没有找到你要的内容!")
 				return redirect(reverse('front:search'))
 		else:
 			return redirect(reverse('front:search'))
+
+#search结果
+class SearchResultView(View):
+	def post(self, request, *args, **kwargs):
+		print(request.POST.get('id'))
+		return render(request, 'result.html')
+
+#search error结果
+class SearchResultErrorView(View):
+	def post(self, request, *args, **kwargs):
+		print(request.POST.get('id'))
+		return render(request, 'result.html')
 
 #对象详情页面
 class ObjectDetailView(View):
@@ -64,8 +86,8 @@ class ObjectDetailView(View):
 		neo_graph = get_graph()
 		#tx = neo_graph.begin()
 		matcher = NodeMatcher(neo_graph)
-		object=matcher.match("Concept", name=request.GET.get("name")).first()
+		object=matcher.match( name=request.GET.get("name")).first()
 		object["view_times"] +=1
 		neo_graph.push(object)
 		#tx.commit()
-		return render(request, 'object_detail.html', context={"object": object,"custom":json.loads(object["custom"]),"labels":object.labels})
+		return render(request, 'object_detail.html', context={"object": object,"labels":object.labels})

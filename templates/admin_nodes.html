@@ -27,74 +27,48 @@
         </div>
 
     </div>
-    <!--script src="{% static 'custom/js/initialGraph.js' %}"></script-->
     <script>
-    var jq = $.noConflict();
-    jq(document).ready(function(){
-        var style = [
-            { selector: 'node[label = "Concept"]',
-              css: {'background-color': '#6FB1FC', 'content': 'data(name)'}
-            },
-            { selector: 'node[label = "Style"]',
-              css: {'background-color': '#fcf146', 'content': 'data(name)'}
-            },
-            { selector: 'node[label = "Example"]',
-              css: {'background-color': '#F5A45D', 'content': 'data(name)'}
-            },
-            { selector: 'node[label = "Type"]',
-              css: {'background-color': '#3844f5', 'content': 'data(name)'}
-            },
-            { selector: 'node[label = "Color"]',
-              css: {'background-color': '#f52635', 'content': 'data(name)'}
-            },
-            { selector: 'node[label = "Fabrictype"]',
-              css: {'background-color': '#6bf51e', 'content': 'data(name)'}
-            },
-            { selector: 'node[label = "People"]',
-              css: {'background-color': '#f50e8f', 'content': 'data(name)'}
-            },
-            { selector: 'node[label = "Mould"]',
-              css: {'background-color': '#3bf5ba', 'content': 'data(name)'}
-            },
-            { selector: 'node[label = "Designer"]',
-              css: {'background-color': '#21f563', 'content': 'data(name)'}
-            },
-            { selector: 'edge',
-              css: {'content': 'data(relationship)', 'target-arrow-shape': 'triangle'}
-            }
-        ];
+    var elements = {{ element|safe }};
+        var jq = $.noConflict();
+        jq(document).ready(function(){
+            var style = [
+                { selector: 'node[label = "Process"]',
+                  css: {'background-color': '#6FB1FC', 'content': 'data(name)'}
+                },
+                { selector: 'node[label = "Style"]',
+                  css: {'background-color': '#fcf146', 'content': 'data(name)'}
+                },
+                { selector: 'node[label = "People"]',
+                  css: {'background-color': '#fcf146', 'content': 'data(name)'}
+                },
+                { selector: 'edge',
+                  css: {'content': 'data(relationship)', 'target-arrow-shape': 'triangle'}
+                }
+            ];
 
-        var elements = {
-            nodes: [],
-            edges: []
-        };
+            var layout = {
+                name: 'concentric',
+                fit:true,
+                padding: 30, // the padding on fit
+                startAngle:4/ 2 * Math.PI, // where nodes start in radians
+                sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+                clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+                equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
+            };
 
-        var layout = { name: 'circle'};
-
-        jq.ajax({
-            url:"{% url 'admin:load_graph' %}",
-            type:"GET",
-
-            {#请求成功回调函数#}
-            success:function (data) {
-                alert(data.nodes);
-                alert("请求成功");
-                var cy = cytoscape({
+            var cy = cytoscape({
                 container: document.getElementById('cy'),
-                    style:style,
-                    elements: {
-                        nodes:data.nodes,
-                        edges:data.edges,
-                    },
-                    layout: layout,
-                });
-            },
-            {#请求失败回调函数#}
-            error:function () {
-                alert("服务器请求超时,请重试!");
-            }
-
+                style:style,
+                elements:elements,
+                layout: layout,
+                userPanningEnabled: false,
+            });
+            cy.on('tap', 'node', function(evt){
+                var node = evt.target;
+                console.log( 'tapped ' + node.id());
+                alert(node.id())
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}

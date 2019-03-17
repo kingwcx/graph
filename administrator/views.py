@@ -36,14 +36,10 @@ class AdminIndexView(View):
 		return render(request, 'admin_home.html')
 
 
-show = {'': '全部',
-        'Concept': '知识',
-        'Example': '成衣示例',
-        'Color': '色彩', 'People': '人群', 'Mould': '模型', 'Type': '分类', 'Fabrictype': '面料类型',
-        'Brand': '设计品牌', 'Designer': '设计师'}
+show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
 
 
-def buildNodes(nodeRecord):
+def build_node(nodeRecord):
 	data = { "id":str(nodeRecord['id(n)']),
 	         "name": str(nodeRecord['n']['name']),
 	         "label": next(iter(nodeRecord['n'].labels))}
@@ -51,48 +47,55 @@ def buildNodes(nodeRecord):
 	return {"data": data}
 
 
-def buildEdges(relationRecord):
+def build_edge(relationRecord):
 	data = {"source": str(relationRecord['id(m)']),
 	        "target": str(relationRecord['id(n)']),
 	        "relationship": relationRecord['Type(r)']}
 
 	return {"data": data}
 
+def build_nodes(nodes):
+	result =[]
+	for node in nodes:
+		new = build_node(node)
+		result.append(new)
+	return result
+
+def build_edges(edges):
+	result =[]
+	for edge in edges:
+		new = build_edge(edge)
+		result.append(new)
+	return result
 
 def load_graph(request):
 	print(request)
 	neo_graph = get_graph()
-	# tx = neo_graph.begin()
-	# result = Style.match(neo_graph)
-	matcher = NodeMatcher(neo_graph)
 	result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
 	result_edges = neo_graph.run('MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)').data()
-	# result = matcher.match("Example")
-	print(result_edges)
-	nodes = []
-	for x in result_nodes:
-		x2 = buildNodes(x)
-		nodes.append(x2)
-
-	edges = []
-	for x in result_edges:
-		x2 = buildEdges(x)
-		edges.append(x2)
-
-	print(edges)
+	nodes = build_nodes(result_nodes)
+	edges = build_edges(result_edges)
+	print(nodes)
 	return JsonResponse({"nodes": nodes, "edges": edges})
+
+def load_search_graph(request):
+	pass
 
 
 # 展示节点node
 class AdminShowNodeView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_nodes.html', context={"labels": show})
+		neo_graph = get_graph()
+		result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
+		result_edges = neo_graph.run('MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)').data()
+		nodes = build_nodes(result_nodes)
+		edges = build_edges(result_edges)
+		element = json.dumps({"nodes": nodes, "edges": edges})
+		return render(request, 'admin_nodes.html', context={"labels": show,"element":element})
 
 
 # 标签清单
-labels = {'Style': '风格', 'Basic': '概念', 'tool': '工具',
-          'Color': '色彩', 'People': '人群', 'Mould': '造型', 'Type': '分类', 'Fabrictype': '面料类型',
-          'Brand': '设计品牌', 'Designer': '设计师'}
+labels = {'People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
 label_base = "Concept"
 concepts = {'Style': '风格', 'Basic': '概念', 'tool': '工具'}
 essemtial_labels = {'Color': '色彩', 'People': '人群', 'Mould': '造型', 'Type': '分类', 'Fabrictype': '面料类型'}

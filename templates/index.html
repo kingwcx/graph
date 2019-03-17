@@ -1,16 +1,51 @@
 {% extends 'index_nav.html' %}
 
 {% block content %}
-    首页
-    <h2>This is a heading</h2>
-<p>This is a paragraph.</p>
-<p>This is another paragraph.</p>
-<button type="button">Click me</button>
-    <script type="text/javascript">
-$(document).ready(function(){
-  $("button").click(function(){
-    $("p").css("background-color","red");
-  });
-});
-</script>
+    <div class="row">
+        <div id="cy" class="col-lg-12 col-md-12" style="height: 600px;  text-align: initial"></div>
+    </div>
+    <script>
+        var elements = {{ element|safe }};
+        var jq = $.noConflict();
+        jq(document).ready(function(){
+            var style = [
+                { selector: 'node[label = "Process"]',
+                  css: {'background-color': '#6FB1FC', 'content': 'data(name)'}
+                },
+                { selector: 'node[label = "Style"]',
+                  css: {'background-color': '#fcf146', 'content': 'data(name)'}
+                },
+                { selector: 'node[label = "People"]',
+                  css: {'background-color': '#fcf146', 'content': 'data(name)'}
+                },
+                { selector: 'edge',
+                  css: {'content': 'data(relationship)', 'target-arrow-shape': 'triangle'}
+                }
+            ];
+
+            var layout = {
+                name: 'concentric',
+                fit:true,
+                padding: 30, // the padding on fit
+                startAngle:4/ 2 * Math.PI, // where nodes start in radians
+                sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+                clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+                equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
+            };
+
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                style:style,
+                elements:elements,
+                layout: layout,
+                userPanningEnabled: false,
+            });
+            cy.on('tap', 'node', function(evt){
+                var node = evt.target;
+                console.log( 'tapped ' + node.id());
+                alert(node.id())
+            });
+        });
+    </script>
 {% endblock %}
