@@ -28,8 +28,6 @@ def get_graph():
 """
  视图
 """
-
-
 # 管理员主页面
 class AdminIndexView(View):
 	def get(self, request, *args, **kwargs):
@@ -39,6 +37,7 @@ class AdminIndexView(View):
 show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
 
 
+"""函数"""
 #处理返回的节点和边的数据
 def build_node(nodeRecord):
 	data = { "id":str(nodeRecord['id(n)']),
@@ -60,6 +59,7 @@ def build_nodes(nodes):
 		new = build_node(node)
 		result.append(new)
 	return result
+
 #处理返回的节点和边的数据
 def build_edges(edges):
 	result =[]
@@ -78,25 +78,38 @@ def load_graph():
 	edges = build_edges(result_edges)
 	return ({"nodes": nodes, "edges": edges})
 
+#使用id查找单个节点信息
+def load_search_node(id):
+	neo_graph = get_graph()
+	result = neo_graph.run("match (n) where id(n)= " + str(id) + " return n,id(n)").data()
+	data = {"id": str(result[0]['id(n)']),
+	        "property": result[0]['n'],
+	        "label": next(iter(result[0]['n'].labels))}
+	return data
+
 #加载节点边以及周围的边
 def load_search_graph(id):
 	neo_graph = get_graph()
-	results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return m,id(m),Type(r),id(r),n,id(n)").data()
-	edges = build_edges(results)
-	nodes = build_nodes(results)
-
-	data = {"id":str(results[0]['id(m)']),
-	         "name": str(results[0]['m']['name']),
-	         "label": next(iter(results[0]['m'].labels))}
+	results1 = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return m,id(m),Type(r),id(r),n,id(n)").data()
+	results2 = neo_graph.run("match (m)-[r]->(n) where id(n)= " + str(id) +" return m,id(m),Type(r),id(r),n,id(n)").data()
+	edges = build_edges(results1)
+	nodes = build_nodes(results1)
+	#error 改m，与n对其的关系
+	edges2 = build_edges(results2)
+	nodes2 = build_nodes(results2)
+	edges.append(build_edges(results2))
+	nodes.append(build_nodes(results2)
+	             )
+	result = load_search_node(id)
+	data ={'id':result['id'],
+	       'name':result['property']['name'],
+	       'label':result['label']
+	}
+	print(data)
 	node = {"data": data}
 	nodes.append(node)
 
 	return ({"nodes": nodes, "edges": edges})
-
-#使用id查找单个节点信息
-def load_search_node(id):
-	neo_graph = get_graph()
-	results = neo_graph.run("match (n) where id(n)= " + str(id) + " return n").data()
 
 
 
@@ -206,19 +219,6 @@ class AdminAddNode(View):
 # 添加服装知识：风格，工具，基础概念
 class AdminAddConcept(View):
 	def post(self, request, *args, **kwargs):
-		# form = NodeForm(request.POST)
-		# if form.is_valid():
-		# 	introduction = form.cleaned_data.get('introduction')
-		# 	name = form.cleaned_data.get('name')
-		# 	label = form.cleaned_data.get('label')
-		# 	neo_graph = get_graph()
-		# 	tx = neo_graph.begin()
-		# 	new = Sytle()
-		# 	new.name = name
-		# 	new.introduction = introduction
-		# 	neo_graph.push(new)
-		# 	#tx.commit()
-		# 	return redirect(reverse('admin:knowledge_graph'))
 		form = NodeForm(request.POST)
 		if form.is_valid():
 			introduction = form.cleaned_data.get('introduction')
@@ -263,62 +263,14 @@ class AdminAddExample(View):
 		return redirect(reverse('admin:add_example_view'))
 
 
-# 添加设计师
-class AdminAddDesigner(View):
-	def post(self, request, *args, **kwargs):
-		pass
-
-
-# 添加品牌
-class AdminAddBrand(View):
-	def post(self, request, *args, **kwargs):
-		pass
-
-
-# 添加造型
-class AdminAddMould(View):
-	def post(self, request, *args, **kwargs):
-		pass
-
-
-# 添加造型
-class AdminAddColor(View):
-	def post(self, request, *args, **kwargs):
-		pass
-
-
-# 添加类别
-class AdminAddType(View):
-	def post(self, request, *args, **kwargs):
-		pass
-
-
-# 添加面料类型
-class AdminAddFabrictype(View):
-	def post(self, request, *args, **kwargs):
-		pass
-
-
-# 添加人群
-class AdminAddPeople(View):
-	def post(self, request, *args, **kwargs):
-		pass
-
-
 """查找接口"""
-
-
-class Find(View):
-	def get(self, request, *args, **kwargs):
-		neo_graph = get_graph()
-		# tx = neo_graph.begin()
-		# result = Style.match(neo_graph)
-		matcher = NodeMatcher(neo_graph)
-		# result = neo_graph.run("MATCH (a) RETURN a.name").data()
-		result = matcher.match("Example")
-		print(result)
-		# tx.commit()
-		return HttpResponse(200)
+#通过id返回节点和周围路径为1的点
+class FindByIdInterface(View):
+	def post(self, request, *args, **kwargs):
+		id = request.POST.get('id')
+		print(id)
+		data = load_search_graph(id)
+		return JsonResponse(data)
 
 
 """添加关系接口"""
