@@ -98,8 +98,7 @@ def load_search_graph(id):
 	edges2 = build_edges(results2)
 	nodes2 = build_nodes(results2)
 	edges.append(build_edges(results2))
-	nodes.append(build_nodes(results2)
-	             )
+	nodes.append(build_nodes(results2))
 	result = load_search_node(id)
 	data ={'id':result['id'],
 	       'name':result['property']['name'],
