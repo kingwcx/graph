@@ -97,7 +97,7 @@ def load_search_graph(id):
 def load_search_node(id):
 	neo_graph = get_graph()
 	results = neo_graph.run("match (n) where id(n)= " + str(id) + " return n").data()
-	print(results[0]['n']['name'])
+
 
 
 # 展示节点node

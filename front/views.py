@@ -32,7 +32,6 @@ def get_graph():
 class IndexView(View):
 	#new = Basic(name="色彩").save()
 	def get(self,request,*args,**kwargs):
-		load_search_node(172)
 		element = json.dumps(load_graph())
 		return render(request, 'index.html',context={'element':element})
 
@@ -46,16 +45,25 @@ class SearchActionView(View):
 	def post(self,request,*args,**kwargs):
 		search = request.POST.get("search")
 		if search != "":
-			#try:
+			try:
 				neo_graph = get_graph()
-				results = neo_graph.run("MATCH (n) WHERE n.name = '"+ search + "'RETURN *,id(n)").data()
+				results = neo_graph.run("MATCH (n) WHERE n.name =~ '.*"+ search + ".*'RETURN *,id(n)").data()
+				results2 = neo_graph.run("MATCH (n) WHERE n.description =~ '.*"+ search + ".*'RETURN *,id(n)").data()
 				ids = []
 				for result in results:
 					ids.append(result['id(n)'])
-				print(ids)
-				return render(request, 'result.html',context={'ids':ids})
-			#except:
-				print("没有找到你要的内容!")
+				for result in results2:
+					ids.append(result['id(n)'])
+
+				if ids != []:
+					ids = set(ids)
+					print(ids)
+					return render(request, 'result.html',context={'ids':ids})
+				else:
+					print("没有找到你要的内容!")
+					return render(request, 'result_error.html',context={'error':"没有找到你要的内容!",'search':search})
+			except:
+				print("服务器错误！")
 				return render(request, 'result_error.html')
 		else:
 			return redirect(reverse('front:search'))

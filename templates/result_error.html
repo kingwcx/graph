@@ -1,5 +1,9 @@
 {% extends 'index_nav.html' %}
 
 {% block content %}
-    搜索错误
+    <div class="jumbotron" style="background-color: white">
+        <h1>很抱歉</h1>
+        <p>{{ error }}</p>
+        <p><a class="btn btn-primary btn-sm" href="{% url 'front:search' %}" role="button">搜索其他</a></p>
+    </div>
 {% endblock %}
