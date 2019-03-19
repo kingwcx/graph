@@ -39,10 +39,10 @@ show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Proc
 
 """函数"""
 #处理返回的节点和边的数据
-def build_node(nodeRecord):
-	data = { "id":str(nodeRecord['id(n)']),
-	         "name": str(nodeRecord['n']['name']),
-	         "label": next(iter(nodeRecord['n'].labels))}
+def build_node(nodeRecord,node_str):
+	data = { "id":str(nodeRecord['id('+node_str+')']),
+	         "name": str(nodeRecord[node_str]['name']),
+	         "label": next(iter(nodeRecord[node_str].labels))}
 
 	return {"data": data}
 #处理返回的节点和边的数据
@@ -53,10 +53,10 @@ def build_edge(relationRecord):
 
 	return {"data": data}
 #处理返回的节点和边的数据
-def build_nodes(nodes):
+def build_nodes(nodes,node_str):
 	result =[]
 	for node in nodes:
-		new = build_node(node)
+		new = build_node(node,node_str)
 		result.append(new)
 	return result
 
@@ -74,7 +74,7 @@ def load_graph():
 	neo_graph = get_graph()
 	result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
 	result_edges = neo_graph.run('MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)').data()
-	nodes = build_nodes(result_nodes)
+	nodes = build_nodes(result_nodes,'n')
 	edges = build_edges(result_edges)
 	return ({"nodes": nodes, "edges": edges})
 
@@ -82,6 +82,7 @@ def load_graph():
 def load_search_node(id):
 	neo_graph = get_graph()
 	result = neo_graph.run("match (n) where id(n)= " + str(id) + " return n,id(n)").data()
+	print(result)
 	data = {"id": str(result[0]['id(n)']),
 	        "property": result[0]['n'],
 	        "label": next(iter(result[0]['n'].labels))}
@@ -93,18 +94,23 @@ def load_search_graph(id):
 	results1 = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return m,id(m),Type(r),id(r),n,id(n)").data()
 	results2 = neo_graph.run("match (m)-[r]->(n) where id(n)= " + str(id) +" return m,id(m),Type(r),id(r),n,id(n)").data()
 	edges = build_edges(results1)
-	nodes = build_nodes(results1)
+	nodes = build_nodes(results1,'n')
+
 	#error 改m，与n对其的关系
 	edges2 = build_edges(results2)
-	nodes2 = build_nodes(results2)
-	edges.append(build_edges(results2))
-	nodes.append(build_nodes(results2))
+	nodes2 = build_nodes(results2,'m')
+	print(nodes2)
+	print(edges2)
+	for node in nodes2:
+		nodes.append(node)
+	for edge in edges2:
+		edges.append(edge)
+
 	result = load_search_node(id)
 	data ={'id':result['id'],
-	       'name':result['property']['name'],
+	       'name':str(result['property']['name']),
 	       'label':result['label']
 	}
-	print(data)
 	node = {"data": data}
 	nodes.append(node)
 
@@ -267,8 +273,9 @@ class AdminAddExample(View):
 class FindByIdInterface(View):
 	def post(self, request, *args, **kwargs):
 		id = request.POST.get('id')
-		print(id)
+		#print(id)
 		data = load_search_graph(id)
+		#print(data)
 		return JsonResponse(data)
 
 
