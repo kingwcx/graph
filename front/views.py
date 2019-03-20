@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,reverse
 
-#数据库
-from py2neo import *
+# 数据库
+from administrator.database import *
 #NEOMODEL模型
 
 # 视图
@@ -12,18 +12,7 @@ from django.core.paginator import Paginator
 from django.views import View
 #json
 import json
-#其他视图函数
-from administrator.views import *
 
-
-def get_graph():
-	neo4j = Graph(
-		host="127.0.0.1",  # neo4j 搭载服务器的ip地址
-		http_port=7978,  # neo4j 服务器监听的端口号
-		user="neo4j",  # 数据库user name
-		password="123456"  # 密码
-	)
-	return neo4j
 
 """
  视图

@@ -23,6 +23,7 @@ urlpatterns = [
 	path('home/', views.AdminIndexView.as_view(), name='home'),
 
 	path('knowledge_graph/', views.AdminShowNodeView.as_view(), name='knowledge_graph'),
+	path('search/', views.AdminSearchNodeView.as_view(), name='search_node'),
 
 	path('add_node_view/', views.AdminAddNodeView.as_view(), name='add_node_view'),
 	path('add_node/', views.AdminAddNode.as_view(), name='add_node'),

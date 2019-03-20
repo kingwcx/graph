@@ -48,24 +48,23 @@
         ];
         function edit_panel(current_data)
         {
-            jq("#panel-head").text(current_data.property.name);
-            var txt1=jq("<p></p>").text(current_data.property.description);  // 使用 jQuery 创建文本
-            jq("#panel-body p:first").remove();
-            jq("#panel-body").prepend(txt1);        // 追加新元素
+            $("#panel-head").text(current_data.property.name);
+            var txt1=$("<p></p>").text(current_data.property.description);  // 使用 jQuery 创建文本
+            $("#panel-body p:first").remove();
+            $("#panel-body").prepend(txt1);        // 追加新元素
 
-            jq("#panel-input").attr({"value" : current_data.id,});
+            $("#panel-input").attr({"value" : current_data.id,});
         }
-        var jq = $.noConflict();
-        jq(function(){
-        　　jq("#{{ ids.0 }}").addClass("active");
-            jq("#{{ ids.0 }}").trigger("click");
+        $(function(){
+        　　$("#{{ ids.0 }}").addClass("active");
+            $("#{{ ids.0 }}").trigger("click");
         });
-        jq("li").click(function(){
-            jq("li").removeClass("active");
-            jq(this).addClass("active");
-            jq.post("{% url 'admin:find_node' %}",
+        $("li").click(function(){
+            $("li").removeClass("active");
+            $(this).addClass("active");
+            $.post("{% url 'admin:find_node' %}",
             {
-                id:jq(this).attr('id'),
+                id:$(this).attr('id'),
             },
                 function(data){
                 edit_panel(data.current_data);
@@ -90,7 +89,7 @@
                 cy.on('tap', 'node', function(evt){
                     var node = evt.target;
                     console.log( 'tapped ' + node.id());
-                    jq.post("{% url 'admin:find_node' %}",
+                    $.post("{% url 'admin:find_node' %}",
                     {
                         id:node.id(),
                     },

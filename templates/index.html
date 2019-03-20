@@ -6,8 +6,7 @@
     </div>
     <script>
         var elements = {{ element|safe }};
-        var jq = $.noConflict();
-        jq(document).ready(function(){
+        $(document).ready(function(){
             var style = [
                 { selector: 'node[label = "Design"]',
                   css: {'background-color': '#fc33b6', 'content': 'data(name)'}
