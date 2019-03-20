@@ -54,11 +54,13 @@ class SearchActionView(View):
 					ids.append(result['id(n)'])
 				for result in results2:
 					ids.append(result['id(n)'])
-
+				data = {}
 				if ids != []:
-					ids = set(ids)
-					print(ids)
-					return render(request, 'result.html',context={'ids':ids})
+					ids = list(set(ids))
+					for id in ids:
+						result = load_search_node(id)
+						data[id] = result['property']['name']
+					return render(request, 'result.html',context={'ids':ids,'data':data})
 				else:
 					print("没有找到你要的内容!")
 					return render(request, 'result_error.html',context={'error':"没有找到你要的内容!",'search':search})
@@ -82,11 +84,17 @@ class SearchResultErrorView(View):
 #对象详情页面
 class ObjectDetailView(View):
 	def get(self,request,*args,**kwargs):
-		neo_graph = get_graph()
-		#tx = neo_graph.begin()
-		matcher = NodeMatcher(neo_graph)
-		object=matcher.match( name=request.GET.get("name")).first()
-		object["view_times"] +=1
-		neo_graph.push(object)
-		#tx.commit()
-		return render(request, 'object_detail.html', context={"object": object,"labels":object.labels})
+		try:
+			id = kwargs['id']
+			detail = load_search_node(id)
+			print(detail)
+			return render(request, 'object_detail.html', context={"object": detail,"labels":detail['label']})
+		except:
+			return HttpResponse("DetailView404")
+
+	def post(self,request,*args,**kwargs):
+		try:
+			id = request.POST.get('id')
+			return redirect(reverse('front:object_detail', kwargs = {"id": id}))
+		except:
+			return HttpResponse("DetailView404")

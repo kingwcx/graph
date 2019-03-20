@@ -274,7 +274,9 @@ class FindByIdInterface(View):
 	def post(self, request, *args, **kwargs):
 		id = request.POST.get('id')
 		#print(id)
-		data = load_search_graph(id)
+		elements = load_search_graph(id)
+		current_data = load_search_node(id)
+		data = {'current_data':current_data,'elements':elements}
 		#print(data)
 		return JsonResponse(data)
 

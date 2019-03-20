@@ -2,12 +2,26 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 pull-right" style="right:0;position: absolute; Z-INDEX:2;">
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 pull-right" style="left:0;position: absolute; Z-INDEX:2;">
             <ul class="list-group">
-            {% for id in ids %}
-                <li class="list-group-item">{{ id }}</li>
+            {% for key,value in data.items %}
+                <li id="{{ key }}" class="list-group-item">{{ value }}</li>
             {% endfor %}
             </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 pull-right" style="right:0;position: absolute; Z-INDEX:2;">
+            <div id="panel" class="panel panel-info">
+                <div id="panel-head" class="panel-heading">Panel heading</div>
+                <div id="panel-body" class="panel-body">
+                    <p>...</p>
+                    <form action="{% url 'front:object_detail' %}" method="post">
+                        <input id="panel-input" name="id" type="text" class="hidden">
+                        <button id="panel-button" type="submit" class="btn btn-info center-block">查看详情</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -32,40 +46,71 @@
               css: {'content': 'data(relationship)', 'target-arrow-shape': 'triangle'}
             }
         ];
-
-        var layout = {
-            name: 'circle',
-            fit:true,
-            padding: 30, // the padding on fit
-            startAngle:4/ 2 * Math.PI, // where nodes start in radians
-            sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
-            clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
-            equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
-            minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
-        };
-        var jq = $.noConflict();
-        jq.post("{% url 'admin:find_node' %}",
+        function edit_panel(current_data)
         {
-            id:28,
-        },
-            function(data){
-            elements = data;
-            var cy = cytoscape({
-                container: document.getElementById('cy'),
-                style:style,
-                elements:elements,
-                layout: layout,
-                userPanningEnabled: false,
-            });
-            cy.on('tap', 'node', function(evt){
-                var node = evt.target;
-                console.log( 'tapped ' + node.id());
-                alert(node.id())
+            jq("#panel-head").text(current_data.property.name);
+            var txt1=jq("<p></p>").text(current_data.property.description);  // 使用 jQuery 创建文本
+            jq("#panel-body p:first").remove();
+            jq("#panel-body").prepend(txt1);        // 追加新元素
+
+            jq("#panel-input").attr({"value" : current_data.id,});
+        }
+        var jq = $.noConflict();
+        jq(function(){
+        　　jq("#{{ ids.0 }}").addClass("active");
+            jq("#{{ ids.0 }}").trigger("click");
+        });
+        jq("li").click(function(){
+            jq("li").removeClass("active");
+            jq(this).addClass("active");
+            jq.post("{% url 'admin:find_node' %}",
+            {
+                id:jq(this).attr('id'),
+            },
+                function(data){
+                edit_panel(data.current_data);
+
+                elements = data.elements;
+                var cy = cytoscape({
+                    container: document.getElementById('cy'),
+                    style:style,
+                    elements:elements,
+                });
+                var layout = cy.layout({
+                    name: 'concentric',
+                    fit:true,
+                    padding: 30, // the padding on fit
+                    startAngle:4/ 2 * Math.PI, // where nodes start in radians
+                    sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+                    clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+                    equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                    minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
+                });
+                layout.run();
+                cy.on('tap', 'node', function(evt){
+                    var node = evt.target;
+                    console.log( 'tapped ' + node.id());
+                    jq.post("{% url 'admin:find_node' %}",
+                    {
+                        id:node.id(),
+                    },
+                        function(data) {
+                            cy.add(data.elements);
+                            var layout = cy.layout({
+                                name: 'concentric',
+                                fit:true,
+                                padding: 30, // the padding on fit
+                                startAngle:4/ 2 * Math.PI, // where nodes start in radians
+                                sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+                                clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+                                equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                                minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
+                            });
+                            layout.run();
+                            edit_panel(data.current_data);
+                        });
+                });
             });
         });
-
-
-
-
     </script>
 {% endblock %}

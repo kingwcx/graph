@@ -5,12 +5,12 @@
         <div class="row">
             <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
                 <div class="row">
-                    <h2>{{ object.name }}
+                    <h2>{{ object.property.name }}
                         <small><button type="button" class="btn btn-default btn-sm" >
                             <i class="fa fa-edit"></i>编辑</button>
                         </small>
                     </h2>
-                    <p style="text-indent:2em;">{{ object.introduction }}</p>
+                    <p style="text-indent:2em;">{{ object.property.description }}</p>
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
@@ -18,7 +18,7 @@
                             <tbody>
                                 <tr>
                                     <td><b>中文名</b></td>
-                                    <td>{{ object.name }}</td>
+                                    <td>{{ object.property.name }}</td>
                                 </tr>
                                 <tr>
                                     <td><b>标签</b></td>
