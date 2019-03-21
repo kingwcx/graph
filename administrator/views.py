@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 # 数据库
 from .database import *
 # 表单验证
-from .forms import NodeForm
+from .forms import NodeForm,RelationshipForm
 
 # 视图
 from django.views import View
@@ -35,14 +35,33 @@ class AdminShowNodeView(View):
 class AdminSearchNodeView(View):
 	def get(self, request, *args, **kwargs):
 		return render(request, 'admin_search.html')
+	def post(self, request, *args, **kwargs):
+		search_key = request.POST.get('search')
+		if search_key != "":
+			try:
+				ids = search(search_key)
+				data = {}
+				if ids != []:
+					ids = list(set(ids))
+					for id in ids:
+						result = load_search_node(id)
+						data[id] = result['property']['name']
+					return render(request, 'admin_search.html', context={'search': search_key,'ids':ids,'data':data})
+				else:
+					print("没有找到你要的内容!")
+					return redirect(reverse('admin:search_node'))
+			except:
+				print("服务器错误！")
+				return redirect(reverse('admin:search_node'))
+		else:
+			return redirect(reverse('admin:search_node'))
 
 
 # 标签清单
-labels = {'People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
-label_base = "Concept"
-concepts = {'Style': '风格', 'Basic': '概念', 'tool': '工具'}
-essemtial_labels = {'Color': '色彩', 'People': '人群', 'Mould': '造型', 'Type': '分类', 'Fabrictype': '面料类型'}
-designer_labels = {'Brand': '设计品牌', 'Designer': '设计师'}
+labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计'}
+show_labels = {'Design': '服装设计','Style': '款式','Patternmaking': '制版','Technology': '工艺'}
+
+relationships = {'Kind_of': 'Kind_of'}
 
 
 # ajax返回所需标签
@@ -55,11 +74,16 @@ class AdminAddNodeView(View):
 	def get(self, request, *args, **kwargs):
 		return render(request, 'admin_add_node.html', context={"labels": labels})
 
+# 添加关系页面relation
+class AdminAddRelationshipview(View):
+	def get(self, request, *args, **kwargs):
+		return render(request, 'admin_add_relationship.html', context={"relationships": relationships})
+
 
 # 添加知识节点页面node
 class AdminAddConceptView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_add_concept.html', context={"labels": concepts})
+		return render(request, 'admin_add_concept.html', context={"labels": labels})
 
 
 # 添加成衣节点页面node
@@ -86,13 +110,13 @@ class AdminAddExampleView(View):
 # 添加成衣要素节点页面node
 class AdminAddEssentialView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_add_essential.html', context={"labels": essemtial_labels})
+		return render(request, 'admin_add_essential.html', context={"labels": labels})
 
 
 # 添加设计对象节点页面node
 class AdminAddDesignerView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_add_essential.html', context={"labels": designer_labels})
+		return render(request, 'admin_add_essential.html', context={"labels": labels})
 
 
 """
@@ -101,24 +125,16 @@ class AdminAddDesignerView(View):
 
 """添加节点接口"""
 
-
 # 添加节点 （通用）
-class AdminAddNode(View):
+class AdminAddNodeInterface(View):
 	def post(self, request, *args, **kwargs):
 		form = NodeForm(request.POST)
 		if form.is_valid():
-			introduction = form.cleaned_data.get('introduction')
+			description = form.cleaned_data.get('description')
 			name = form.cleaned_data.get('name')
 			label = form.cleaned_data.get('label')
-			# english_name = form.cleaned_data.get('english_name')
-			neo_graph = get_graph()
-			tx = neo_graph.begin()
-			if label in concepts:
-				a = Node(label_base, label, name=name, view_times=0, search_times=0, introduction=introduction)
-			else:
-				a = Node(label, name=name, view_times=0, search_times=0, introduction=introduction)
-			tx.create(a)
-			tx.commit()
+			data = {'name':name,'description':description}
+			add_node(data,label)
 			return redirect(reverse('admin:knowledge_graph'))
 		else:
 			print(form.errors.get_json_data())
@@ -129,7 +145,7 @@ class AdminAddNode(View):
 			except:
 				name = ""
 
-			return render(request, 'admin_add_concept.html', context={"labels": concepts, "errors": form.get_errors(),
+			return render(request, 'admin_add_node.html', context={"labels": labels, "errors": form.get_errors(),
 			                                                          "name": name})
 
 
@@ -192,8 +208,45 @@ class FindByIdInterface(View):
 		#print(data)
 		return JsonResponse(data)
 
+#通过name返回节点集
+class FindByNameInterface(View):
+	def post(self, request, *args, **kwargs):
+		name = request.POST.get('name')
+		nodes = []
+		if(name != ""):
+			try:
+				results = search_property(name,"name")
+				for result in results:
+					id = result['id(n)']
+					name = result['n']['name']
+					nodes.append({'id': id, 'name': name})
+			except:
+				results = {}
+				print("非法输入")
+		else:
+			pass
+		data = {'nodes':nodes}
+		return JsonResponse(data)
+
 
 """添加关系接口"""
+# 添加关系（通用）
+class AdminAddRelationshipInterface(View):
+	def post(self, request, *args, **kwargs):
+		form = RelationshipForm(request.POST)
+		if form.is_valid():
+			souname = form.cleaned_data.get('souname')
+			dstname = form.cleaned_data.get('dstname')
+			souid = form.cleaned_data.get('souid')
+			dstid = form.cleaned_data.get('dstid')
+			relationship = form.cleaned_data.get('relationship')
+			add_relationship(souid,dstid,relationship)
+			return HttpResponse(200)
+		else:
+			print(form.errors.get_json_data())
+			print(form.get_errors())
+			return HttpResponse(404)
+
 
 """修改节点接口"""
 

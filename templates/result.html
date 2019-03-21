@@ -5,7 +5,9 @@
         <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 pull-right" style="left:0;position: absolute; Z-INDEX:2;">
             <ul class="list-group">
             {% for key,value in data.items %}
-                <li id="{{ key }}" class="list-group-item">{{ value }}</li>
+                <li id="{{ key }}" class="list-group-item">
+                    <span class="label label-info">{{ forloop.counter }}</span> {{ value }}
+                </li>
             {% endfor %}
             </ul>
         </div>
@@ -31,20 +33,26 @@
         var elements;
         var style = [
             { selector: 'node[label = "Design"]',
-              css: {'background-color': '#fc33b6', 'content': 'data(name)'}
+              style: {'background-color': '#001ffc', 'content': 'data(name)'}
             },
-            { selector: 'node[label = "Process"]',
-              css: {'background-color': '#6FB1FC', 'content': 'data(name)'}
+            { selector: 'node[label = "Pattern"]',
+              style: {'background-color': '#6FB1FC', 'content': 'data(name)'}
             },
             { selector: 'node[label = "Style"]',
-              css: {'background-color': '#fcf146', 'content': 'data(name)'}
+              style: {'background-color': '#00fce0', 'content': 'data(name)'}
             },
-            { selector: 'node[label = "People"]',
-              css: {'background-color': '#fcf146', 'content': 'data(name)'}
+            { selector: 'node[label = "Technology"]',
+              style: {'background-color': '#39fc9b', 'content': 'data(name)'}
             },
             { selector: 'edge',
-              css: {'content': 'data(relationship)', 'target-arrow-shape': 'triangle'}
-            }
+              style: {'content': 'data(relationship)', 'curve-style': 'bezier','target-arrow-shape': 'triangle'}
+            },
+            { selector: '.eh-hover',
+                style: {
+                'background-color': 'red'
+                }
+            },
+
         ];
         function edit_panel(current_data)
         {
@@ -55,10 +63,43 @@
 
             $("#panel-input").attr({"value" : current_data.id,});
         }
+        function highlight_node(node)
+        {
+            node.animate({
+                      style: {
+                          backgroundColor: 'red',
+                          width: '50px',
+                          height: '50px'
+                      }
+                }, {
+                    duration: 1000
+                });
+        }
+        function create_graph(data){
+            elements = data.elements;
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                style:style,
+                elements:elements,
+            });
+            var layout = cy.layout({
+                name: 'concentric',
+                fit:true,
+                padding: 30, // the padding on fit
+                startAngle:4/ 2 * Math.PI, // where nodes start in radians
+                sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+                clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+                equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
+            });
+            layout.run();
+            return cy;
+        }
         $(function(){
         　　$("#{{ ids.0 }}").addClass("active");
             $("#{{ ids.0 }}").trigger("click");
         });
+
         $("li").click(function(){
             $("li").removeClass("active");
             $(this).addClass("active");
@@ -69,31 +110,16 @@
                 function(data){
                 edit_panel(data.current_data);
 
-                elements = data.elements;
-                var cy = cytoscape({
-                    container: document.getElementById('cy'),
-                    style:style,
-                    elements:elements,
-                });
-                var layout = cy.layout({
-                    name: 'concentric',
-                    fit:true,
-                    padding: 30, // the padding on fit
-                    startAngle:4/ 2 * Math.PI, // where nodes start in radians
-                    sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
-                    clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
-                    equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
-                    minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
-                });
-                layout.run();
+                cy = create_graph(data);
                 cy.on('tap', 'node', function(evt){
                     var node = evt.target;
-                    console.log( 'tapped ' + node.id());
+                    console.log( 'tapped ' + node);
                     $.post("{% url 'admin:find_node' %}",
                     {
                         id:node.id(),
                     },
                         function(data) {
+                            cy.remove('node[id != '+ node.id() +']');
                             cy.add(data.elements);
                             var layout = cy.layout({
                                 name: 'concentric',
@@ -106,8 +132,10 @@
                                 minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
                             });
                             layout.run();
+
                             edit_panel(data.current_data);
                         });
+                    highlight_node(node);
                 });
             });
         });

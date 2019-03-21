@@ -4,17 +4,8 @@ from .models import User
 from django.contrib.auth import get_user_model
 
 #数据库
-from py2neo import *
+from .database import *
 
-#连接数据库
-def get_graph():
-	neo4j = Graph(
-		host="127.0.0.1",  # neo4j 搭载服务器的ip地址
-		http_port=7978,  # neo4j 服务器监听的端口号
-		user="neo4j",  # 数据库user name
-		password="123456"  # 密码
-	)
-	return neo4j
 
 class LoginForm(forms.ModelForm):
 	username = forms.CharField(max_length=150)
@@ -39,7 +30,7 @@ class RegisterForm(forms.ModelForm):
 class NodeForm(forms.Form):
 	name = forms.CharField(max_length=12,error_messages={'required':u'名字不能为空'})
 	label = forms.CharField()
-	introduction = forms.CharField(error_messages={'required':u'简介不能为空'})
+	description = forms.CharField(error_messages={'required':u'简介不能为空'})
 
 	def clean(self):
 		name = self.cleaned_data.get('name')
@@ -49,6 +40,37 @@ class NodeForm(forms.Form):
 		exists = matcher.match( label,name=name).first()
 		if exists != None:
 			raise forms.ValidationError("节点:"+ name +"已经存在！")
+
+	def get_errors(self):
+		errors = self.errors.get_json_data()
+		new_errors = {}
+		for key, message_dicts in errors.items():
+			messages = []
+			for message in message_dicts:
+				messages.append(message['message'])
+			new_errors[key] = messages
+		return new_errors
+
+class RelationshipForm(forms.Form):
+	souid = forms.IntegerField(error_messages={'required':u'名字不能为空'})
+	dstid = forms.IntegerField(error_messages={'required':u'名字不能为空'})
+	souname = forms.CharField(max_length=12,error_messages={'required':u'名字不能为空'})
+	dstname = forms.CharField(max_length=12,error_messages={'required':u'名字不能为空'})
+	relationship = forms.CharField(error_messages={'required':u'关系不能为空'})
+
+	def clean(self):
+		souid = self.cleaned_data.get('souid')
+		dstid = self.cleaned_data.get('dstid')
+		relationship = self.cleaned_data.get('relationship')
+		if(souid == dstid):
+			raise forms.ValidationError(souid+"  "+dstid+"源节点和目的节点不能是同一节点")
+		results = find_relationship(souid,dstid)
+		if results != []:
+			for result in results:
+				if result['type(r)'] == relationship:
+					raise forms.ValidationError(relationship + "关系已存在")
+
+
 
 	def get_errors(self):
 		errors = self.errors.get_json_data()

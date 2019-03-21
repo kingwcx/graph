@@ -31,18 +31,4 @@ class UserStudy(models.Model):
 		db_table = 'study_mid'
 
 
-class Concept(GraphObject):
-	__primarykey__ = "name"
-
-	name = Property()
-	introduction = Property()
-	view_times = Property(0)
-	search_times = Property(0)
-
-
-class Style(Concept):
-	__primarykey__ = "name"
-
-
-
 

@@ -14,6 +14,30 @@ def get_graph():
 	)
 	return neo4j
 
+#OGM
+class Design(GraphObject):
+	name = Property()
+	description = Property()
+	view_times = Property(0)
+	search_times = Property(0)
+
+class Style(GraphObject):
+	name = Property()
+	description = Property()
+	view_times = Property(0)
+	search_times = Property(0)
+
+class Pattern(GraphObject):
+	name = Property()
+	description = Property()
+	view_times = Property(0)
+	search_times = Property(0)
+
+class Technology(GraphObject):
+	name = Property()
+	description = Property()
+	view_times = Property(0)
+	search_times = Property(0)
 
 """函数"""
 #处理返回的节点和边的数据
@@ -66,7 +90,26 @@ def load_search_node(id):
 	        "label": next(iter(result[0]['n'].labels))}
 	return data
 
-#加载节点边以及周围的边
+#加载节点上级的边的节点
+def load_up_node(id):
+	neo_graph = get_graph()
+	results = neo_graph.run("match (m)-[r]->(n) where id(n)= " + str(id) +" return m,id(m)").data()
+	nodes = build_nodes(results, 'm')
+	return nodes
+
+#查找节点下级的边的节点
+def load_down_node(id):
+	neo_graph = get_graph()
+	results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return n,id(n)").data()
+	nodes = build_nodes(results, 'n')
+	return nodes
+
+#查找节点同级的节点
+def load_peer_node(id):
+	pass
+
+
+#查找节点边以及周围的边
 def load_search_graph(id):
 	neo_graph = get_graph()
 	results1 = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return m,id(m),Type(r),id(r),n,id(n)").data()
@@ -93,4 +136,61 @@ def load_search_graph(id):
 	nodes.append(node)
 
 	return ({"nodes": nodes, "edges": edges})
+
+#关键字搜索指定属性 返回ids
+def search_property(search,property):
+	neo_graph = get_graph()
+	results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*'RETURN *,id(n)").data()
+	ids = []
+	for result in results:
+		ids.append(result['id(n)'])
+	return results
+
+#关键字搜索函数name与descroption 返回ids
+def search(search):
+	results = search_property(search,'name')
+	results2 = search_property(search,'description')
+	ids = []
+	for result in results:
+		ids.append(result['id(n)'])
+	for result in results2:
+		ids.append(result['id(n)'])
+	return ids
+
+#添加节点
+def add_node(data,label):
+	neo_graph = get_graph()
+	tx = neo_graph.begin()
+	a = Node(label, name=data['name'], view_times=0, search_times=0, description=data['description'])
+	tx.create(a)
+	tx.commit()
+	return True
+
+
+#查找节点关系/查找两节点之间关系
+def find_relationship(idn,idm):
+	neo_graph = get_graph()
+	results = neo_graph.run("MATCH (n)-[r:Kind_of]->(m) WHERE id(n) = " +str(idn)+ " and id(m) = " +str(idm)+ "  RETURN r,type(r)").data()
+	return results
+
+#添加关系
+def add_relationship(idn,idm,relationship):
+	neo_graph = get_graph()
+	results = find_relationship(idn,idm)
+	if results != []:
+		for result in results:
+			if result['type(r)'] == relationship:
+				return(relationship + "关系已存在")
+	neo_graph.run("MATCH (n),(m) WHERE id(n) = " + str(idn) + " and id(m) = " + str(idm) + "  CREATE (n)-[r:Kind_of]->(m)")
+	return(True)
+
+
+#删除节点关系
+def delete_relationship(idn,idm,relation):
+	pass
+
+#删除节点
+def delete_node(id):
+	pass
+
 

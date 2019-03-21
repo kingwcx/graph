@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,reverse
-
+from django.http import JsonResponse, HttpResponse
 # 数据库
 from administrator.database import *
 #NEOMODEL模型
@@ -32,17 +32,10 @@ class SearchView(View):
 #search操作
 class SearchActionView(View):
 	def post(self,request,*args,**kwargs):
-		search = request.POST.get("search")
-		if search != "":
+		search_key = request.POST.get("search")
+		if search_key != "":
 			try:
-				neo_graph = get_graph()
-				results = neo_graph.run("MATCH (n) WHERE n.name =~ '.*"+ search + ".*'RETURN *,id(n)").data()
-				results2 = neo_graph.run("MATCH (n) WHERE n.description =~ '.*"+ search + ".*'RETURN *,id(n)").data()
-				ids = []
-				for result in results:
-					ids.append(result['id(n)'])
-				for result in results2:
-					ids.append(result['id(n)'])
+				ids = search(search_key)
 				data = {}
 				if ids != []:
 					ids = list(set(ids))
