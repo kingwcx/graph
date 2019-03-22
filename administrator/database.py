@@ -105,8 +105,14 @@ def load_down_node(id):
 
 #查找节点同级的节点
 def load_peer_node(id):
-	pass
-
+	nodes = load_up_node(id)
+	results = []
+	for node in nodes:
+		mids = load_down_node(node['data']['id'])
+		for mid in mids:
+			if mid['data']['id'] != str(id):
+				results.append(mid)
+	return results
 
 #查找节点边以及周围的边
 def load_search_graph(id):
@@ -173,8 +179,6 @@ def edit_node(id,property,value):
 	result[property] = value
 	neo_graph.push(result)
 
-
-
 #查找节点关系/查找两节点之间关系
 def find_relationship(idn,idm):
 	neo_graph = get_graph()
@@ -193,12 +197,14 @@ def add_relationship(idn,idm,relationship):
 	return True
 
 
-#删除节点关系
+#删除节点关系  修改ing
 def delete_relationship(idn,idm,relation):
-	pass
+	neo_graph = get_graph()
+	neo_graph.run("MATCH (n)-[r]->(m) WHERE id(n) = " + str(idn) + " and id(m) = " + str(idm) + " and type(r) = " + relation + "  DELETE r")
 
-#删除节点
+#删除节点  删之前删除关系
 def delete_node(id):
-	pass
+	neo_graph = get_graph()
+	neo_graph.run("MATCH (n) WHERE id(n) = " + str(id) + "  DELETE n")
 
 

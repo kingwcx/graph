@@ -69,8 +69,16 @@ class ObjectDetailView(View):
 		try:
 			id = kwargs['id']
 			detail = load_search_node(id)
-			print(detail)
-			return render(request, 'object_detail.html', context={"object": detail,"labels":detail['label']})
+			up_nodes = load_up_node(id)
+			down_nodes = load_down_node(id)
+			peer_nodes = load_peer_node(id)
+			other_nodes = {
+				'up_nodes':up_nodes,
+				'down_nodes':down_nodes,
+				'peer_nodes':peer_nodes,
+			}
+			print(other_nodes)
+			return render(request, 'object_detail.html', context={"object": detail,"labels":detail['label'],'other_nodes':other_nodes})
 		except:
 			return HttpResponse("DetailView404")
 

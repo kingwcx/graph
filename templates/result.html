@@ -33,19 +33,50 @@
         var elements;
         var style = [
             { selector: 'node[label = "Design"]',
-              style: {'background-color': '#001ffc', 'content': 'data(name)'}
+                style: {
+                    'background-color': '#001ffc',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                }
             },
             { selector: 'node[label = "Pattern"]',
-              style: {'background-color': '#6FB1FC', 'content': 'data(name)'}
+                style: {
+                    'background-color': '#6FB1FC',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
             },
             { selector: 'node[label = "Style"]',
-              style: {'background-color': '#00fce0', 'content': 'data(name)'}
+                style: {
+                    'background-color': '#00fce0',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
             },
             { selector: 'node[label = "Technology"]',
-              style: {'background-color': '#39fc9b', 'content': 'data(name)'}
+                style: {
+                    'background-color': '#39fc9b',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
             },
             { selector: 'edge',
-              style: {'content': 'data(relationship)', 'curve-style': 'bezier','target-arrow-shape': 'triangle'}
+                style: {
+                    'content': 'data(relationship)',
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle'}
             },
             { selector: '.eh-hover',
                 style: {
@@ -84,7 +115,7 @@
             });
             var layout = cy.layout({
                 name: 'concentric',
-                fit:true,
+                fit:false,
                 padding: 30, // the padding on fit
                 startAngle:4/ 2 * Math.PI, // where nodes start in radians
                 sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)

@@ -194,6 +194,27 @@ class FindByNameInterface(View):
 		data = {'nodes':nodes}
 		return JsonResponse(data)
 
+#通过id返回上级节点
+class FindUpByIdInterface(View):
+	def post(self, request, *args, **kwargs):
+		id = request.POST.get('id')
+		nodes = load_up_node(id)
+		return JsonResponse(nodes)
+
+#通过id返回下级节点
+class FindDownByIdInterface(View):
+	def post(self, request, *args, **kwargs):
+		id = request.POST.get('id')
+		nodes = load_down_node(id)
+		return JsonResponse(nodes)
+
+#通过id返回同级节点
+class FindPeerByIdInterface(View):
+	def post(self, request, *args, **kwargs):
+		id = request.POST.get('id')
+		nodes = load_peer_node(id)
+		return JsonResponse(nodes)
+
 
 """添加关系接口"""
 # 添加关系（通用）
