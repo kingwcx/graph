@@ -27,14 +27,16 @@ urlpatterns = [
 
 	path('add_node_view/', views.AdminAddNodeView.as_view(), name='add_node_view'),
 	path('add_node/', views.AdminAddNodeInterface.as_view(), name='add_node'),
-	path('add_relationship_view/', views.AdminAddRelationshipview.as_view(), name='add_relationship_view'),
+	path('add_relationship_view/', views.AdminAddRelationshipView.as_view(), name='add_relationship_view'),
 	path('add_relationship/', views.AdminAddRelationshipInterface.as_view(), name='add_relationship'),
+	path('edit_node_view/', views.AdminEditNodeView.as_view(), name='edit_node_view'),
+	path('edit_node/', views.AdminEditNodeInterface .as_view(), name='edit_node'),
+
 
 	path('add_example_view/', views.AdminAddExampleView.as_view(), name='add_example_view'),
-	path('add_example/', views.AdminAddExample.as_view(), name='add_example'),
+
 
 	path('add_concept_view/', views.AdminAddConceptView.as_view(), name='add_concept_view'),
-	path('add_concept/', views.AdminAddConcept.as_view(), name='add_concept'),
 
 	path('find/node', views.FindByIdInterface.as_view(), name='find_node'),
 	path('find/node/name', views.FindByNameInterface.as_view(), name='find_node_name'),

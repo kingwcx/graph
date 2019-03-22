@@ -84,7 +84,6 @@ def load_graph():
 def load_search_node(id):
 	neo_graph = get_graph()
 	result = neo_graph.run("match (n) where id(n)= " + str(id) + " return n,id(n)").data()
-	print(result)
 	data = {"id": str(result[0]['id(n)']),
 	        "property": result[0]['n'],
 	        "label": next(iter(result[0]['n'].labels))}
@@ -166,6 +165,15 @@ def add_node(data,label):
 	tx.commit()
 	return True
 
+#修改节点单个属性
+def edit_node(id,property,value):
+	neo_graph = get_graph()
+	matcher = NodeMatcher(neo_graph)
+	result = matcher.get(int(id))
+	result[property] = value
+	neo_graph.push(result)
+
+
 
 #查找节点关系/查找两节点之间关系
 def find_relationship(idn,idm):
@@ -182,7 +190,7 @@ def add_relationship(idn,idm,relationship):
 			if result['type(r)'] == relationship:
 				return(relationship + "关系已存在")
 	neo_graph.run("MATCH (n),(m) WHERE id(n) = " + str(idn) + " and id(m) = " + str(idm) + "  CREATE (n)-[r:Kind_of]->(m)")
-	return(True)
+	return True
 
 
 #删除节点关系

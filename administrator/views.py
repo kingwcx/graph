@@ -75,7 +75,20 @@ class AdminAddNodeView(View):
 		return render(request, 'admin_add_node.html', context={"labels": labels})
 
 # 添加关系页面relation
-class AdminAddRelationshipview(View):
+class AdminAddRelationshipView(View):
+	def get(self, request, *args, **kwargs):
+		return render(request, 'admin_add_relationship.html', context={"relationships": relationships})
+
+# 修改节点页面node
+class AdminEditNodeView(View):
+	def get(self, request, *args, **kwargs):
+		id = request.GET.get('id')
+		data = load_search_node(id)
+		print(data['property'])
+		return render(request, 'admin_edit_node.html',context={'data':data})
+
+# 修改关系页面relationship
+class AdminEditRelationshipView(View):
 	def get(self, request, *args, **kwargs):
 		return render(request, 'admin_add_relationship.html', context={"relationships": relationships})
 
@@ -149,53 +162,6 @@ class AdminAddNodeInterface(View):
 			                                                          "name": name})
 
 
-# 添加服装知识：风格，工具，基础概念
-class AdminAddConcept(View):
-	def post(self, request, *args, **kwargs):
-		form = NodeForm(request.POST)
-		if form.is_valid():
-			introduction = form.cleaned_data.get('introduction')
-			name = form.cleaned_data.get('name')
-			label = form.cleaned_data.get('label')
-			# english_name = form.cleaned_data.get('english_name')
-			neo_graph = get_graph()
-			tx = neo_graph.begin()
-			a = Node(label_base, label, name=name, view_times=0, search_times=0, introduction=introduction)
-			tx.create(a)
-			tx.commit()
-			return redirect(reverse('admin:knowledge_graph'))
-		else:
-			print(form.errors.get_json_data())
-			print(form.get_errors())
-
-			try:
-				print(form.get_errors()['__all__'])
-				name = form.get_errors()['__all__']
-			except:
-				name = ""
-
-			return render(request, 'admin_add_concept.html', context={"labels": concepts, "errors": form.get_errors(),
-			                                                          "name": name})
-
-
-# 添加成衣示例
-class AdminAddExample(View):
-	def post(self, request, *args, **kwargs):
-		# neo_graph = get_graph()
-		# tx = neo_graph.begin()
-		# matcher = NodeMatcher(neo_graph)
-		# example = matcher.match("Example", name="黑色男装夹克").first()
-		# type = matcher.match("Fabrictype", name="柔软型").first()
-		# color = matcher.match("Color", name="黑色").first()
-		#
-		# et = Relationship(example, "use", type)
-		# ec = Relationship(example, "mix", color)
-		# tx.create(ec)
-		# tx.create(et)
-		# tx.commit()
-		return redirect(reverse('admin:add_example_view'))
-
-
 """查找接口"""
 #通过id返回节点和周围路径为1的点
 class FindByIdInterface(View):
@@ -249,6 +215,25 @@ class AdminAddRelationshipInterface(View):
 
 
 """修改节点接口"""
+class AdminEditNodeInterface(View):
+	def post(self, request, *args, **kwargs):
+		data = {}
+		id = request.POST.get('id')
+		print(id)
+		name = request.POST.get('name')
+		print(name)
+		description = request.POST.get('description')
+		print(description)
+		if(name!=''):
+			edit_node(id,"name",name)
+		else:
+			print("不修改name")
+		if (description != ''):
+			edit_node(id, "description", description)
+		else:
+			print("不修改description")
+
+		return HttpResponse(200)
 
 """删除节点接口"""
 

@@ -1,0 +1,65 @@
+{% extends 'admin_nav.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>修改节点<small>留空亦为不修改</small></h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form action="{% url 'admin:edit_node' %}" method="post">
+                        <input name="id" type="text" value="{{ data.id }}" style="display: none">
+                        <div class="form-group  row"><label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">名字</label>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                <input name="name" type="text" class="form-control" value="{{ data.property.name }}">
+                                <span class="form-text m-b-none">
+                                    {% for foo in name %}
+                                        {{ foo }}
+                                    {% endfor %}
+                                    {% for foo in errors.name %}
+                                        {{ foo }}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group  row"><label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">标签</label>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                <p class="form-control-static">{{ data.label }}</p>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group  row"><label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">简介</label>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                <textarea name="description" type="text" class="form-control" rows="3">{{ data.property.description }}</textarea>
+                                <span class="form-text m-b-none">
+                                    {% for foo in errors.description %}
+                                        {{ foo }}
+                                    {% endfor %}</span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group row">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2">
+                                <button class="btn btn-white btn-sm" type="button">取消</button>
+                                <button class="btn btn-primary btn-sm" type="submit">保存</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+    </script>
+{% endblock %}
