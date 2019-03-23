@@ -31,6 +31,7 @@ urlpatterns = [
 	path('add_relationship/', views.AdminAddRelationshipInterface.as_view(), name='add_relationship'),
 	path('edit_node_view/', views.AdminEditNodeView.as_view(), name='edit_node_view'),
 	path('edit_node/', views.AdminEditNodeInterface .as_view(), name='edit_node'),
+	path('upload_images/<int:id>/', views.AdminUploadImageInterface .as_view(), name='upload_images'),
 
 
 	path('add_example_view/', views.AdminAddExampleView.as_view(), name='add_example_view'),

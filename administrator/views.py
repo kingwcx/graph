@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import JsonResponse, HttpResponse
+from django.core.files import  *
 # 数据库
 from .database import *
 # 表单验证
@@ -234,17 +235,21 @@ class AdminAddRelationshipInterface(View):
 			print(form.get_errors())
 			return HttpResponse(404)
 
+"""上传图片"""
+class AdminUploadImageInterface(View):
+	def post(self, request, *args, **kwargs):
+		id = kwargs['id']
+		img = request.FILES.get('image')
+		url = upload_img(id,img)
+		return JsonResponse({'url':url})
 
 """修改节点接口"""
 class AdminEditNodeInterface(View):
 	def post(self, request, *args, **kwargs):
 		data = {}
 		id = request.POST.get('id')
-		print(id)
 		name = request.POST.get('name')
-		print(name)
 		description = request.POST.get('description')
-		print(description)
 		if(name!=''):
 			edit_node(id,"name",name)
 		else:
@@ -254,7 +259,7 @@ class AdminEditNodeInterface(View):
 		else:
 			print("不修改description")
 
-		return HttpResponse(200)
+		return JsonResponse({})
 
 """删除节点接口"""
 

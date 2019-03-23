@@ -1,8 +1,13 @@
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 # 数据库neo4j
 from py2neo import *
 # NEOMODEL模型
 from .models import *
 import json
+import os
 
 #neo4j链接
 def get_graph():
@@ -178,6 +183,43 @@ def edit_node(id,property,value):
 	result = matcher.get(int(id))
 	result[property] = value
 	neo_graph.push(result)
+
+
+#查找字符
+def find_last(string,str):
+	last_position=-1
+	while True:
+		position=string.find(str,last_position+1)
+		if position==-1:
+			return last_position
+		last_position=position
+
+#上传图片
+def upload_img(id,img):
+	saveDir = settings.MEDIA_ROOT + "\\node\\" + str(id)  # 保存路径
+	# 获取保存路径并查看是否存在，不存在则新建
+	getSaveDir = os.path.join(os.getcwd(), saveDir)
+	if not os.path.exists(getSaveDir):
+		os.makedirs(getSaveDir, 493)
+
+	ImgPath = os.path.join(getSaveDir, img.name)  # filename是f的固有属性
+	#print(ImgPath) #D:\works\毕业设计\代码\project\media\node\79\20151215000118_rRPfm.jpeg
+	path = default_storage.save(ImgPath,ContentFile(img.read()))
+	#print(path) #D:/works/毕业设计/代码/project/media/node/79/20151215000118_rRPfm_5D5LF0h.jpeg
+	tmp_file = os.path.join(settings.MEDIA_ROOT,path)
+	#print(tmp_file) #D:/works/毕业设计/代码/project/media/node/79/20151215000118_rRPfm_5D5LF0h.jpeg
+	index = find_last(tmp_file,'/')
+	img_url = "{}node/{}/{}".format(settings.MEDIA_URL, id, tmp_file[index+1:])
+
+	neo_graph = get_graph()
+	matcher = NodeMatcher(neo_graph)
+	result = matcher.get(int(id))
+	result['img_url'].append(img_url)
+	#print(len(result['img_url']))
+	print(result['img_url'])
+	neo_graph.push(result)
+	print(img_url) #/media/node/79/20151215000118_rRPfm.jpeg
+	return img_url
 
 #查找节点关系/查找两节点之间关系
 def find_relationship(idn,idm):

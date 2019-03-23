@@ -5,11 +5,28 @@
         <title>设计师学习</title>
         <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'bootstrap/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+
+        <!-- blueimp gallery -->
+        <link rel="stylesheet" href="{% static 'admin/css/plugins/blueimp/css/blueimp-gallery.min.css' %}">
+        <link rel="stylesheet" href="{% static 'admin/css/animate.css' %}">
+
+        <!-- Basic scripts -->
         <script src="{% static 'bootstrap/jquery/jquery-3.3.1.min.js' %}"></script>
         <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 
         <!-- cytoscape -->
         <script src="{% static 'cytoscape/cytoscape.min.js' %}"></script>
+
+        <!-- Mainly scripts -->
+        <script src="{% static 'admin/js/popper.min.js' %}"></script>
+        <script src="{% static 'admin/js/plugins/metisMenu/jquery.metisMenu.js' %}"></script>
+        <script src="{% static 'admin/js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+        <!-- Custom and plugin javascript -->
+        <script src="{% static 'admin/js/inspinia.js' %}"></script>
+        <script src="{% static 'admin/js/plugins/pace/pace.min.js' %}"></script>
+
+        <!-- blueimp gallery -->
+        <script src="{% static 'admin/js/plugins/blueimp/jquery.blueimp-gallery.min.js' %}"></script>
     </head>
     <body>
         {% if request.path == '/index/' %}
