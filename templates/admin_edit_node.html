@@ -29,6 +29,12 @@
                             </div>
                         </div>
 
+                        <div class="form-group  row"><label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">外文名</label>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                <input name="english" type="text" class="form-control" value="{{ data.property.english }}">
+                            </div>
+                        </div>
+
                         <div class="hr-line-dashed"></div>
                         <div class="form-group  row"><label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">标签</label>
                             <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
@@ -58,6 +64,16 @@
 
                         <div class="hr-line-dashed"></div>
                         <div class="form-group  row">
+                            <label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">删除图片</label>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                <a data-toggle="modal" class="btn btn-primary" href="#modal-form">删除图片</a>
+
+
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group  row">
                             <label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">相关链接</label>
                             <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
                                 <input name="url" type="text" class="form-control" value="{{ data.property.url }}">
@@ -72,6 +88,38 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-form" class="modal fade" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <td>图片</td>
+                                    <td>操作</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for url in data.property.img_url %}
+                                    <tr>
+                                        <td><img src="{{ url }}" alt="" style="max-height: 60px"></td>
+                                        <td>
+                                            <form action="{% url 'admin:delete_images' %}" method="post">
+                                                <input name="url" style="display: none" type="text" value="{{ url }}">
+                                                <input name="id" style="display: none" type="text" value="{{ data.id }}">
+                                                <button type="submit" class="btn btn-primary btn-sm">删除图片</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

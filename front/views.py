@@ -68,6 +68,7 @@ class ObjectDetailView(View):
 	def get(self,request,*args,**kwargs):
 		try:
 			id = kwargs['id']
+			all_imgs = get_all_down_image(id)
 			detail = load_search_node(id)
 			up_nodes = load_up_node(id)
 			down_nodes = load_down_node(id)
@@ -78,8 +79,9 @@ class ObjectDetailView(View):
 				'down_nodes':down_nodes,
 				'peer_nodes':peer_nodes,
 			}
-			print(detail['property']['img_url'])
-			return render(request, 'object_detail.html', context={"object": detail,"labels":detail['label'],'other_nodes':other_nodes})
+			#print(detail['property']['img_url'])
+			return render(request, 'object_detail.html',
+						  context={"object": detail,"labels":detail['label'],'other_nodes':other_nodes,'all_imgs':all_imgs})
 		except:
 			return HttpResponse("DetailView404")
 

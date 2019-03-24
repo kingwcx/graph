@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
                 <div class="row">
-                    <form action="{% url 'admin:edit_node_view' %}" method="get">
+                    <form action="{% url 'admin:edit_node_view_post' %}" method="post">
                         <input class="hidden" id="detail-ibox-input" name="id" type="text" value="{{ object.id }}" style="display: none">
                         <h2>{{ object.property.name }}
                             <small>
@@ -36,7 +36,7 @@
                             <tbody>
                                 <tr>
                                     <td><b>外文名</b></td>
-                                    <td>{{ object.english }}</td>
+                                    <td>{{ object.property.english }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -55,17 +55,19 @@
                         {% endfor %}
                     {% endfor %}
                 </div>
-                {% if object.property.url != None and object.property.url != '' %}
+                {% if object.property.url != None and object.property.url != ' ' and object.property.url != '' %}
+                <hr>
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <p>相关链接</p><a href="{{ object.property.url }}">{{ object.property.url }}</a>
                     </div>
                 </div>
                 {% endif %}
+                <hr>
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="lightBoxGallery">
-                            {% for url in object.property.img_url %}
+                            {% for url in all_imgs %}
                                 {% if forloop.counter <= 4 %}
                                     <a href="{{ url }}" class="col-md-3" title="{{ object.property.name }}" data-gallery="">
                                         <img class="img-thumbnail center-block" src="{{ url }}"
@@ -85,6 +87,21 @@
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
                 <p id="p1"><strong>相关知识</strong><i class="fa fa-angle-down pull-right"></i></p>
                 <div id="relation1" class="row">
+                    {% for up_node in other_nodes.up_nodes %}
+                        {% if forloop.counter <= 1 %}
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
+                                <div class="thumbnail">
+                                    <!--img src="" alt="..."-->
+                                    <div class="caption">
+                                        <h3>{{ up_node.data.name }}</h3>
+                                        <p>
+                                            <a href="{% url 'front:object_detail' id=up_node.data.id %}" class="btn btn-primary" role="button">查看详情</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                     {% for down_node in other_nodes.down_nodes %}
                         {% if forloop.counter <= 3 %}
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">

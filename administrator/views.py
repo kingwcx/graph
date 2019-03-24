@@ -83,14 +83,12 @@ class AdminAddRelationshipView(View):
 # 修改节点页面node
 class AdminEditNodeView(View):
 	def get(self, request, *args, **kwargs):
-		id = request.GET.get('id')
+		id = kwargs['id']
 		data = load_search_node(id)
-		print(data['property'])
 		return render(request, 'admin_edit_node.html',context={'data':data})
 	def post(self, request, *args, **kwargs):
 		id = request.POST.get('id')
 		data = load_search_node(id)
-		print(data['property'])
 		return render(request, 'admin_edit_node.html',context={'data':data})
 
 # 修改关系页面relationship
@@ -210,28 +208,41 @@ class AdminUploadImageInterface(View):
 		url = upload_img(id,img)
 		return JsonResponse({'url':url})
 
+"""删除节点图片"""
+class AdminDeleteImageInterface(View):
+	def post(self, request, *args, **kwargs):
+		id = request.POST.get('id')
+		url = request.POST.get('url')
+		delete_img(id,url)
+		return redirect(reverse('admin:edit_node_view',kwargs={'id':id}))
+
 """修改节点接口"""
 class AdminEditNodeInterface(View):
 	def post(self, request, *args, **kwargs):
 		data = {}
 		id = request.POST.get('id')
 		name = request.POST.get('name')
+		english = request.POST.get('english')
 		description = request.POST.get('description')
 		url = request.POST.get('url')
 		if name!='':
 			edit_node(id,"name",name)
 		else:
 			print("不修改name")
+		if english != '':
+			edit_node(id, "english", english)
+		else:
+			print("不修改english")
 		if description != '':
 			edit_node(id, "description", description)
 		else:
 			print("不修改description")
-		if url!='None':
+		if url!='None' and url !=' ':
 			if "https://" not in url:
 				url = "https://" + url
 			edit_node(id, "url", url)
 		else:
-			print("不修改description")
+			print("不修改url")
 
 		return redirect(reverse('front:object_detail',kwargs={'id':id}))
 

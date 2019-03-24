@@ -29,9 +29,11 @@ urlpatterns = [
 	path('add_node/', views.AdminAddNodeInterface.as_view(), name='add_node'),
 	path('add_relationship_view/', views.AdminAddRelationshipView.as_view(), name='add_relationship_view'),
 	path('add_relationship/', views.AdminAddRelationshipInterface.as_view(), name='add_relationship'),
-	path('edit_node_view/', views.AdminEditNodeView.as_view(), name='edit_node_view'),
+	path('edit_node_view/', views.AdminEditNodeView.as_view(), name='edit_node_view_post'),
+	path('edit_node_view/<int:id>/', views.AdminEditNodeView.as_view(), name='edit_node_view'),
 	path('edit_node/', views.AdminEditNodeInterface .as_view(), name='edit_node'),
 	path('upload_images/<int:id>/', views.AdminUploadImageInterface .as_view(), name='upload_images'),
+	path('delete_images/', views.AdminDeleteImageInterface.as_view(), name='delete_images'),
 
 	path('find/node', views.FindByIdInterface.as_view(), name='find_node'),
 	path('find/node/name', views.FindByNameInterface.as_view(), name='find_node_name'),

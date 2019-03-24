@@ -31,18 +31,52 @@
         var jq = $.noConflict();
         jq(document).ready(function(){
             var style = [
-                { selector: 'node[label = "Process"]',
-                  css: {'background-color': '#6FB1FC', 'content': 'data(name)'}
+                { selector: 'node[label = "Design"]',
+                    style: {
+                        'background-color': '#c0fcb0',
+                        'content': 'data(name)',
+                        'height': '50px',
+                        'width': '50px',
+                        //'text-valign': 'center',
+                        //'text-halign': 'center',
+                    }
+                },
+                { selector: 'node[label = "Pattern"]',
+                    style: {
+                        'background-color': '#6FB1FC',
+                        'content': 'data(name)',
+                        'height': '50px',
+                        'width': '50px',
+                        //'text-valign': 'center',
+                        //'text-halign': 'center',
+                        }
                 },
                 { selector: 'node[label = "Style"]',
-                  css: {'background-color': '#fcf146', 'content': 'data(name)'}
+                    style: {
+                        'background-color': '#00fce0',
+                        'content': 'data(name)',
+                        'height': '50px',
+                        'width': '50px',
+                        //'text-valign': 'center',
+                        //'text-halign': 'center',
+                        }
                 },
-                { selector: 'node[label = "People"]',
-                  css: {'background-color': '#fcf146', 'content': 'data(name)'}
+                { selector: 'node[label = "Technology"]',
+                    style: {
+                        'background-color': '#39fc9b',
+                        'content': 'data(name)',
+                        'height': '50px',
+                        'width': '50px',
+                        //'text-valign': 'center',
+                        //'text-halign': 'center',
+                        }
                 },
                 { selector: 'edge',
-                  css: {'content': 'data(relationship)', 'target-arrow-shape': 'triangle'}
-                }
+                    style: {
+                        'content': 'data(relationship)',
+                        'curve-style': 'bezier',
+                        'target-arrow-shape': 'triangle'}
+                },
             ];
 
             var layout = {
@@ -52,7 +86,7 @@
                 startAngle:4/ 2 * Math.PI, // where nodes start in radians
                 sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
                 clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
-                equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                equidistant: true, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
                 minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
             };
 
@@ -61,12 +95,11 @@
                 style:style,
                 elements:elements,
                 layout: layout,
-                userPanningEnabled: false,
+
             });
             cy.on('tap', 'node', function(evt){
                 var node = evt.target;
                 console.log( 'tapped ' + node.id());
-                alert(node.id())
             });
         });
     </script>

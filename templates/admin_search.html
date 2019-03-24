@@ -69,9 +69,9 @@
                             </div>
                             <div class="row">
                                 <div id="detail-ibox-foot" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <form action="{% url 'admin:edit_node_view' %}" method="get">
+                                    <form action="{% url 'admin:edit_node_view_post' %}" method="post">
                                         <input class="hidden" id="detail-ibox-input" name="id" type="text" style="display: none">
-                                        <button id="detail-ibox-button" type="submit" class="btn btn-info center-block">修改节点</button>
+                                        <button id="detail-ibox-button" type="submit" class="btn btn-info center-block" style="display: none">修改节点</button>
                                     </form>
                                 </div>
                             </div>
@@ -121,6 +121,7 @@
             id:$(this).attr('id'),
         },
         function(data){
+            $('#detail-ibox-button').css("display","");
             current_data = data.current_data;
             $('#detail-ibox-title-h5').text(current_data.property.name);
             $("#detail-ibox-body").empty();

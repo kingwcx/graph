@@ -108,6 +108,7 @@ def load_down_node(id):
 	neo_graph = get_graph()
 	results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return n,id(n) ORDER BY m.search_times DESC").data()
 	nodes = build_nodes(results, 'n')
+	#node['data']['id']
 	return nodes
 
 #查找节点同级的节点
@@ -173,7 +174,7 @@ def search(search):
 def add_node(data,label):
 	neo_graph = get_graph()
 	tx = neo_graph.begin()
-	a = Node(label, name=data['name'], view_times=0, search_times=0, description=data['description'])
+	a = Node(label, name=data['name'], english=data['english'], view_times=0, search_times=0, description=data['description'])
 	tx.create(a)
 	tx.commit()
 	return True
@@ -204,6 +205,12 @@ def find_last(string,str):
 		last_position=position
 
 #上传图片
+import threading
+from threading import Thread
+from threading import Lock
+import time
+
+mutex=Lock()
 def upload_img(id,img):
 	saveDir = settings.MEDIA_ROOT + "\\node\\" + str(id)  # 保存路径
 	# 获取保存路径并查看是否存在，不存在则新建
@@ -220,14 +227,26 @@ def upload_img(id,img):
 	index = find_last(tmp_file,'/')
 	img_url = "{}node/{}/{}".format(settings.MEDIA_URL, id, tmp_file[index+1:])
 
+	global mutex
+	mutex.acquire()
 	neo_graph = get_graph()
 	matcher = NodeMatcher(neo_graph)
 	result = matcher.get(int(id))
+	if result['img_url'] == None:
+		result['img_url']=[]
+	else:
+		pass
 	result['img_url'].append(img_url)
-	print(result['img_url'])
 	neo_graph.push(result)
-	print(img_url) #/media/node/79/20151215000118_rRPfm.jpeg
+	mutex.release()
 	return img_url
+
+def delete_img(id,url):
+	neo_graph = get_graph()
+	matcher = NodeMatcher(neo_graph)
+	result = matcher.get(int(id))
+	result['img_url'].remove(url)
+	neo_graph.push(result)
 
 #查找节点关系/查找两节点之间关系
 def find_relationship(idn,idm):
@@ -256,5 +275,31 @@ def delete_relationship(idn,idm,relation):
 def delete_node(id):
 	neo_graph = get_graph()
 	neo_graph.run("MATCH (n) WHERE id(n) = " + str(id) + "  DELETE n")
+
+
+#获得底层所有图片
+def get_img(id):
+	imgs = []
+	mids = load_down_node(id)
+	if mids == []:
+		return []
+	for mid in mids:
+		node = load_search_node(mid['data']['id'])
+		if node['property']['img_url'] == None:
+			imgs.extend([])
+		else:
+			imgs.extend(node['property']['img_url'])
+		imgs.extend(get_img(node['id']))
+
+	return imgs
+def get_all_down_image(id):
+	all_imgs = []
+	node = load_search_node(id)
+	if node['property']['img_url'] == None:
+		all_imgs.extend([])
+	else:
+		all_imgs.extend(node['property']['img_url'])
+	all_imgs.extend(get_img(id))
+	return all_imgs
 
 
