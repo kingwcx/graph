@@ -72,12 +72,13 @@ class ObjectDetailView(View):
 			up_nodes = load_up_node(id)
 			down_nodes = load_down_node(id)
 			peer_nodes = load_peer_node(id)
+			#add_node_number(id,'search_times',1)
 			other_nodes = {
 				'up_nodes':up_nodes,
 				'down_nodes':down_nodes,
 				'peer_nodes':peer_nodes,
 			}
-			print(other_nodes)
+			print(detail['property']['img_url'])
 			return render(request, 'object_detail.html', context={"object": detail,"labels":detail['label'],'other_nodes':other_nodes})
 		except:
 			return HttpResponse("DetailView404")

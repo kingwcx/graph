@@ -33,15 +33,7 @@ urlpatterns = [
 	path('edit_node/', views.AdminEditNodeInterface .as_view(), name='edit_node'),
 	path('upload_images/<int:id>/', views.AdminUploadImageInterface .as_view(), name='upload_images'),
 
-
-	path('add_example_view/', views.AdminAddExampleView.as_view(), name='add_example_view'),
-
-
-	path('add_concept_view/', views.AdminAddConceptView.as_view(), name='add_concept_view'),
-
 	path('find/node', views.FindByIdInterface.as_view(), name='find_node'),
 	path('find/node/name', views.FindByNameInterface.as_view(), name='find_node_name'),
-
-
 
 ]

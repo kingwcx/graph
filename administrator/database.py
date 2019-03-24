@@ -52,6 +52,7 @@ def build_node(nodeRecord,node_str):
 	         "label": next(iter(nodeRecord[node_str].labels))}
 
 	return {"data": data}
+
 #处理返回的节点和边的数据
 def build_edge(relationRecord):
 	data = {"source": str(relationRecord['id(m)']),
@@ -59,6 +60,7 @@ def build_edge(relationRecord):
 	        "relationship": relationRecord['Type(r)']}
 
 	return {"data": data}
+
 #处理返回的节点和边的数据
 def build_nodes(nodes,node_str):
 	result =[]
@@ -97,14 +99,14 @@ def load_search_node(id):
 #加载节点上级的边的节点
 def load_up_node(id):
 	neo_graph = get_graph()
-	results = neo_graph.run("match (m)-[r]->(n) where id(n)= " + str(id) +" return m,id(m)").data()
+	results = neo_graph.run("match (m)-[r]->(n) where id(n)= " + str(id) +" return m,id(m) ORDER BY m.search_times DESC").data()
 	nodes = build_nodes(results, 'm')
 	return nodes
 
 #查找节点下级的边的节点
 def load_down_node(id):
 	neo_graph = get_graph()
-	results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return n,id(n)").data()
+	results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return n,id(n) ORDER BY m.search_times DESC").data()
 	nodes = build_nodes(results, 'n')
 	return nodes
 
@@ -176,6 +178,14 @@ def add_node(data,label):
 	tx.commit()
 	return True
 
+#修改节点单个数字属性
+def add_node_number(id,property,value):
+	neo_graph = get_graph()
+	matcher = NodeMatcher(neo_graph)
+	result = matcher.get(int(id))
+	result[property] = result[property] +value
+	neo_graph.push(result)
+
 #修改节点单个属性
 def edit_node(id,property,value):
 	neo_graph = get_graph()
@@ -183,7 +193,6 @@ def edit_node(id,property,value):
 	result = matcher.get(int(id))
 	result[property] = value
 	neo_graph.push(result)
-
 
 #查找字符
 def find_last(string,str):
@@ -215,7 +224,6 @@ def upload_img(id,img):
 	matcher = NodeMatcher(neo_graph)
 	result = matcher.get(int(id))
 	result['img_url'].append(img_url)
-	#print(len(result['img_url']))
 	print(result['img_url'])
 	neo_graph.push(result)
 	print(img_url) #/media/node/79/20151215000118_rRPfm.jpeg

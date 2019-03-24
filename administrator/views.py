@@ -87,50 +87,17 @@ class AdminEditNodeView(View):
 		data = load_search_node(id)
 		print(data['property'])
 		return render(request, 'admin_edit_node.html',context={'data':data})
+	def post(self, request, *args, **kwargs):
+		id = request.POST.get('id')
+		data = load_search_node(id)
+		print(data['property'])
+		return render(request, 'admin_edit_node.html',context={'data':data})
 
 # 修改关系页面relationship
 class AdminEditRelationshipView(View):
 	def get(self, request, *args, **kwargs):
 		return render(request, 'admin_add_relationship.html', context={"relationships": relationships})
 
-
-# 添加知识节点页面node
-class AdminAddConceptView(View):
-	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_add_concept.html', context={"labels": labels})
-
-
-# 添加成衣节点页面node
-class AdminAddExampleView(View):
-	def get(self, request, *args, **kwargs):
-		neo_graph = get_graph()
-		# tx = neo_graph.begin()
-		matcher = NodeMatcher(neo_graph)
-		# style = matcher.match("style").where("_.name<>""")
-		style = neo_graph.run("MATCH (a:Style) RETURN a.name AS name").data()
-		type = neo_graph.run("MATCH (a:Type) RETURN a.name AS name").data()
-		color = neo_graph.run("MATCH (a:Color) RETURN a.name AS name").data()
-		people = neo_graph.run("MATCH (a:People) RETURN a.name AS name").data()
-		mould = neo_graph.run("MATCH (a:Mould) RETURN a.name AS name").data()
-		fabrictype = neo_graph.run("MATCH (a:Fabrictype) RETURN a.name AS name").data()
-		brand = neo_graph.run("MATCH (a:Brand) RETURN a.name AS name").data()
-		designer = neo_graph.run("MATCH (a:Designer) RETURN a.name AS name").data()
-		select = {'style': style, 'color': color, 'people': people, 'mould': mould, 'fabrictype': fabrictype,
-		          'brand': brand,
-		          'designer': designer, 'type': type}
-		return render(request, 'admin_add_example.html', context={'select': select})
-
-
-# 添加成衣要素节点页面node
-class AdminAddEssentialView(View):
-	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_add_essential.html', context={"labels": labels})
-
-
-# 添加设计对象节点页面node
-class AdminAddDesignerView(View):
-	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_add_essential.html', context={"labels": labels})
 
 
 """
@@ -250,16 +217,23 @@ class AdminEditNodeInterface(View):
 		id = request.POST.get('id')
 		name = request.POST.get('name')
 		description = request.POST.get('description')
-		if(name!=''):
+		url = request.POST.get('url')
+		if name!='':
 			edit_node(id,"name",name)
 		else:
 			print("不修改name")
-		if (description != ''):
+		if description != '':
 			edit_node(id, "description", description)
 		else:
 			print("不修改description")
+		if url!='None':
+			if "https://" not in url:
+				url = "https://" + url
+			edit_node(id, "url", url)
+		else:
+			print("不修改description")
 
-		return JsonResponse({})
+		return redirect(reverse('front:object_detail',kwargs={'id':id}))
 
 """删除节点接口"""
 

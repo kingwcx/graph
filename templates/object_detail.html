@@ -5,11 +5,15 @@
         <div class="row">
             <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
                 <div class="row">
-                    <h2>{{ object.property.name }}
-                        <small><button type="button" class="btn btn-default btn-sm" >
-                            <i class="fa fa-edit"></i>编辑</button>
-                        </small>
-                    </h2>
+                    <form action="{% url 'admin:edit_node_view' %}" method="get">
+                        <input class="hidden" id="detail-ibox-input" name="id" type="text" value="{{ object.id }}" style="display: none">
+                        <h2>{{ object.property.name }}
+                            <small>
+                            <button href="" type="submit" role="button" class="btn btn-default btn-sm" >
+                                <i class="fa fa-edit"></i>编辑
+                            </button></small>
+                        </h2>
+                    </form>
                     <p style="text-indent:2em;">{{ object.property.description }}</p>
                 </div>
                 <div class="row">
@@ -51,55 +55,68 @@
                         {% endfor %}
                     {% endfor %}
                 </div>
+                {% if object.property.url != None and object.property.url != '' %}
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <p>相关链接</p><a href="{{ object.property.url }}">{{ object.property.url }}</a>
+                    </div>
+                </div>
+                {% endif %}
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="lightBoxGallery">
-                            <a href="/media/node/79/timg.jpg" class="col-md-3" title="Image from Unsplash" data-gallery="">
-                                <img class="img-thumbnail" src="/media/node/79/timg.jpg"></a>
-                            <a href="/media/node/79/20151215000118_rRPfm.jpeg" class="col-md-3" title="Image from Unsplash" data-gallery="">
-                                <img class="img-thumbnail" src="/media/node/79/20151215000118_rRPfm.jpeg"></a>
-                            <a href="/media/node/79/timg.jpg" class="col-md- hidden" title="Image from Unsplash" data-gallery="">
-                                <img class="img-thumbnail" src="/media/node/79/timg.jpg"></a>
-                            <a href="/media/node/79/20151215000118_rRPfm.jpeg" class="col-md-3 hidden" title="Image from Unsplash" data-gallery="">
-                                <img class="img-thumbnail" src="/media/node/79/20151215000118_rRPfm.jpeg"></a>
+                            {% for url in object.property.img_url %}
+                                {% if forloop.counter <= 4 %}
+                                    <a href="{{ url }}" class="col-md-3" title="{{ object.property.name }}" data-gallery="">
+                                        <img class="img-thumbnail center-block" src="{{ url }}"
+                                             style="width: 100%;height: 100px">
+                                    </a>
+                                {% else %}
+                                     <a href="{{ url }}" class="col-md-3" title="{{ object.property.name }}" data-gallery="">
+                                        <img class="img-thumbnail hidden" src="{{ url }}">
+                                     </a>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
 
             </div>
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
-                <p>相关知识</p>
-                <div class="row">
+                <p id="p1"><strong>相关知识</strong><i class="fa fa-angle-down pull-right"></i></p>
+                <div id="relation1" class="row">
                     {% for down_node in other_nodes.down_nodes %}
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
-                        <div class="thumbnail">
-                            <img src="" alt="...">
-                            <div class="caption">
-                                <h3>{{ down_node.data.name }}</h3>
-                                <p>
-                                    <a href="#" class="btn btn-primary" role="button">查看详情</a>
-                                    <a href="#" class="btn btn-default" role="button">查看关系</a>
-                                </p>
+                        {% if forloop.counter <= 3 %}
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
+                                <div class="thumbnail">
+                                    <!--img src="" alt="..."-->
+                                    <div class="caption">
+                                        <h3>{{ down_node.data.name }}</h3>
+                                        <p>
+                                            <a href="{% url 'front:object_detail' id=down_node.data.id %}" class="btn btn-primary" role="button">查看详情</a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
-                <p>{{ other_nodes.up_nodes.0.data.name }}</p>
-                <div class="row">
+                <p id="p2"><strong>{{ other_nodes.up_nodes.0.data.name }}</strong><i class="fa fa-angle-down pull-right"></i></p>
+                <div id="relation2" class="row">
                     {% for peer_node in other_nodes.peer_nodes %}
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
-                        <div class="thumbnail">
-                            <img src="" alt="...">
-                            <div class="caption">
-                                <h3>{{ peer_node.data.name }}</h3>
-                                <p>
-                                    <a href="#" class="btn btn-primary" role="button">查看详情</a>
-                                    <a href="#" class="btn btn-default" role="button">查看关系</a>
-                                </p>
+                        {% if forloop.counter <= 3 %}
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
+                                <div class="thumbnail">
+                                    <!--img src="" alt="..."-->
+                                    <div class="caption">
+                                        <h3>{{ peer_node.data.name }}</h3>
+                                        <p>
+                                            <a href="{% url 'front:object_detail' id=peer_node.data.id %}" class="btn btn-primary" role="button">查看详情</a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -116,6 +133,11 @@
         <ol class="indicator"></ol>
     </div>
     <script>
-
+        $("#p1").click(function(){
+            $("#relation1").slideToggle();
+        });
+        $("#p2").click(function(){
+            $("#relation2").slideToggle();
+        });
     </script>
 {% endblock %}
