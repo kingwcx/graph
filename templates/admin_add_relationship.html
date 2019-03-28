@@ -73,7 +73,7 @@
                 $("#"+input_id.list.id).empty();
                 nodes = (data['nodes']);
                 for (var i=0,len=nodes.length; i<len; i++){
-                    $("#"+input_id.list.id).append('<option label="'+nodes[i]['id']+'" value="'+nodes[i]['name']+'"></option>');
+                    $("#"+input_id.list.id).append('<option label='+nodes[i]['id']+' value="'+nodes[i]['name']+'">');
                 }
             });
     }

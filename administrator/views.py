@@ -4,8 +4,11 @@ from django.core.files import  *
 # 数据库
 from .database import *
 # 表单验证
-from .forms import NodeForm,RelationshipForm
-
+from .forms import LoginForm,RegisterForm,NodeForm,RelationshipForm
+# 用户与权限
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, permission_required
+from django.utils.decorators import method_decorator
 # 视图
 from django.views import View
 from django.views.generic.list import ListView
@@ -17,7 +20,35 @@ import json
 """
  视图
 """
+#管理员登陆页面
+class AdminLoginView(View):
+	def get(self, request, *args, **kwargs):
+		return render(request, 'admin_login.html')
+
+	def post(self, request, *args, **kwargs):
+		form = LoginForm(request.POST)
+		next_href = request.GET.get('next', '') #之前登录页面
+		if form.is_valid():
+			username = form.cleaned_data.get('username')
+			password = form.cleaned_data.get('password')
+			user = authenticate(request, username=username, password=password)
+			if user and user.is_superuser:
+				login(request, user)
+				# request.session.set_expriy(0)
+				if next_href == "":
+					return redirect(reverse('admin:home'))
+				else:
+					return redirect(next_href)
+		else:
+			print(form.errors)
+			return redirect(reverse('admin:login'))
+
+def AdminLogout(request):
+	logout(request)
+	return redirect(reverse('admin:login'))
+
 # 管理员主页面
+@method_decorator(login_required(login_url='admin:login'),name='dispatch')
 class AdminIndexView(View):
 	def get(self, request, *args, **kwargs):
 		return render(request, 'admin_home.html')
@@ -62,7 +93,7 @@ class AdminSearchNodeView(View):
 labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计'}
 show_labels = {'Design': '服装设计','Style': '款式','Patternmaking': '制版','Technology': '工艺'}
 
-relationships = {'Kind_of': 'Kind_of'}
+relationships = {'Kind_of': 'Kind_of','Join-of':'Join-of', 'Collocation-of':'Collocation-of'}
 
 
 # ajax返回所需标签
@@ -111,8 +142,9 @@ class AdminAddNodeInterface(View):
 		if form.is_valid():
 			description = form.cleaned_data.get('description')
 			name = form.cleaned_data.get('name')
+			english = form.cleaned_data.get('english')
 			label = form.cleaned_data.get('label')
-			data = {'name':name,'description':description}
+			data = {'name':name,'english':english,'description':description}
 			add_node(data,label)
 			return redirect(reverse('admin:knowledge_graph'))
 		else:
@@ -186,19 +218,22 @@ class FindPeerByIdInterface(View):
 # 添加关系（通用）
 class AdminAddRelationshipInterface(View):
 	def post(self, request, *args, **kwargs):
-		form = RelationshipForm(request.POST)
-		if form.is_valid():
-			souname = form.cleaned_data.get('souname')
-			dstname = form.cleaned_data.get('dstname')
-			souid = form.cleaned_data.get('souid')
-			dstid = form.cleaned_data.get('dstid')
-			relationship = form.cleaned_data.get('relationship')
-			add_relationship(souid,dstid,relationship)
-			return HttpResponse(200)
-		else:
-			print(form.errors.get_json_data())
-			print(form.get_errors())
-			return HttpResponse(404)
+		try:
+			form = RelationshipForm(request.POST)
+			if form.is_valid():
+				souname = form.cleaned_data.get('souname')
+				dstname = form.cleaned_data.get('dstname')
+				souid = form.cleaned_data.get('souid')
+				dstid = form.cleaned_data.get('dstid')
+				relationship = form.cleaned_data.get('relationship')
+				add_relationship(souid,dstid,relationship)
+				return redirect(reverse('admin:knowledge_graph'))
+			else:
+				print(form.errors.get_json_data())
+				print(form.get_errors())
+				return HttpResponse(404)
+		except:
+			HttpResponse("提交了一个错误的参数")
 
 """上传图片"""
 class AdminUploadImageInterface(View):

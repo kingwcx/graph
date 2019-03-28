@@ -20,7 +20,7 @@ class RegisterForm(forms.ModelForm):
 		model = get_user_model()
 		fields = ['password']
 
-	def clean_useranme(self):
+	def clean_username(self):
 		username = self.cleaned_data.get('username')
 		exists = User.objects.filter(username=username).exists()
 		if exists:
@@ -30,6 +30,7 @@ class RegisterForm(forms.ModelForm):
 class NodeForm(forms.Form):
 	name = forms.CharField(max_length=12,error_messages={'required':u'名字不能为空'})
 	label = forms.CharField()
+	english = forms.CharField()
 	description = forms.CharField(error_messages={'required':u'简介不能为空'})
 
 	def clean(self):

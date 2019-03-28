@@ -19,5 +19,10 @@ from . import views
 app_name = 'user'
 
 urlpatterns = [
+	path('login/', views.LoginView.as_view(), name='login'),
+	path('logout/', views.Logout, name='logout'),
+	path('register/', views.RegisterView.as_view(), name='register'),
+	path('select/', views.Select.as_view(), name='select'),
+	path('profile/', views.Profile.as_view(), name='profile'),
 	path('add_object/', views.AddObjectView.as_view(), name='add_object'),
 ]

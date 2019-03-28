@@ -10,6 +10,10 @@ from django.views.generic.list import ListView
 from django.core.paginator import Paginator
 #视图
 from django.views import View
+# 用户与权限
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, permission_required
+from django.utils.decorators import method_decorator
 #json
 import json
 
@@ -17,6 +21,7 @@ import json
 """
  视图
 """
+
 #首页
 class IndexView(View):
 	#new = Basic(name="色彩").save()

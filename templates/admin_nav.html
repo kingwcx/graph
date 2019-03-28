@@ -20,8 +20,7 @@
     <link href="{% static 'admin/css/style.css' %}" rel="stylesheet">
 
     <!-- blueimp gallery -->
-    <link rel="stylesheet" href="{% static 'admin/css/plugins/blueimp/css/blueimp-gallery.min.css' %}">
-    <link rel="stylesheet" href="{% static 'admin/css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/plugins/blueimp/css/blueimp-gallery.min.css' %}"
 
     <!-- cytoscape -->
     <script src="{% static 'cytoscape/cytoscape.min.js' %}"></script>
@@ -59,14 +58,14 @@
                         <div class="dropdown profile-element">
                             <img alt="image" class="rounded-circle" src="{% static 'admin/img/profile_small.jpg' %}"/>
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                                <span class="block m-t-xs font-bold">管理员</span>
+                                <span class="block m-t-xs font-bold">{{ request.user.username }}</span>
                                 <span class="text-muted text-xs block">菜单 <b class="caret"></b></span>
                             </a>
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                                <li><a class="dropdown-item" href="profile.html">个人中心</a></li>
-                                <li><a class="dropdown-item" href="mailbox.html">消息中心</a></li>
+                                <li><a class="dropdown-item" href="">个人中心</a></li>
+                                <li><a class="dropdown-item" href="">消息中心</a></li>
                                 <li class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="login.html">注销</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin:logout' %}">注销</a></li>
                             </ul>
                         </div>
                         <div class="logo-element">
@@ -164,7 +163,7 @@
 
 
                         <li>
-                            <a href="login.html">
+                            <a href="{% url 'admin:logout' %}">
                                 <i class="fa fa-sign-out"></i> 注销
                             </a>
                         </li>

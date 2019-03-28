@@ -44,6 +44,8 @@ class Technology(GraphObject):
 	view_times = Property(0)
 	search_times = Property(0)
 
+limit_str = "where not (n:Example)"
+limit_str2 = " and not (n:Example)"
 """函数"""
 #处理返回的节点和边的数据
 def build_node(nodeRecord,node_str):
@@ -82,7 +84,7 @@ def load_graph():
 	#print(request)
 	neo_graph = get_graph()
 	result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
-	result_edges = neo_graph.run('MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)').data()
+	result_edges = neo_graph.run("MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)").data()
 	nodes = build_nodes(result_nodes,'n')
 	edges = build_edges(result_edges)
 	return ({"nodes": nodes, "edges": edges})
@@ -90,7 +92,7 @@ def load_graph():
 #使用id查找单个节点信息
 def load_search_node(id):
 	neo_graph = get_graph()
-	result = neo_graph.run("match (n) where id(n)= " + str(id) + " return n,id(n)").data()
+	result = neo_graph.run("match (n) where id(n)= " + str(id)  + " return n,id(n)").data()
 	data = {"id": str(result[0]['id(n)']),
 	        "property": result[0]['n'],
 	        "label": next(iter(result[0]['n'].labels))}
@@ -99,14 +101,14 @@ def load_search_node(id):
 #加载节点上级的边的节点
 def load_up_node(id):
 	neo_graph = get_graph()
-	results = neo_graph.run("match (m)-[r]->(n) where id(n)= " + str(id) +" return m,id(m) ORDER BY m.search_times DESC").data()
+	results = neo_graph.run("match (m)-[r]->(n) where id(n)= " + str(id) + limit_str2 + " return m,id(m) ORDER BY m.search_times DESC").data()
 	nodes = build_nodes(results, 'm')
 	return nodes
 
 #查找节点下级的边的节点
 def load_down_node(id):
 	neo_graph = get_graph()
-	results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) +" return n,id(n) ORDER BY m.search_times DESC").data()
+	results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(id) + limit_str2 +" return n,id(n) ORDER BY m.search_times DESC").data()
 	nodes = build_nodes(results, 'n')
 	#node['data']['id']
 	return nodes
@@ -153,7 +155,7 @@ def load_search_graph(id):
 #关键字搜索指定属性 返回ids
 def search_property(search,property):
 	neo_graph = get_graph()
-	results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*'RETURN *,id(n)").data()
+	results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*'" + limit_str2 +" RETURN *,id(n)").data()
 	ids = []
 	for result in results:
 		ids.append(result['id(n)'])

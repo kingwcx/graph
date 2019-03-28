@@ -20,6 +20,8 @@ app_name = 'admin'
 
 urlpatterns = [
 	path('', views.AdminIndexView.as_view(), name='index'),
+	path('login/', views.AdminLoginView.as_view(), name='login'),
+	path('logout/', views.AdminLogout, name='logout'),
 	path('home/', views.AdminIndexView.as_view(), name='home'),
 
 	path('knowledge_graph/', views.AdminShowNodeView.as_view(), name='knowledge_graph'),

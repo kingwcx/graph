@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>后台管理 登录</title>
+
+    <link href="{% static 'admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'admin/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+
+    <link href="{% static 'admin/css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'admin/css/style.css' %}" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <div>
+            <div>
+
+                <h1 class="logo-name">AD</h1>
+
+            </div>
+            <h3>欢迎来到后台管理页面</h3>
+
+            <form class="m-t" role="form" action="{% url 'admin:login' %}" method="post">
+                <div class="form-group">
+                    <input name="username" type="text" class="form-control" placeholder="用户名" required="">
+                </div>
+                <div class="form-group">
+                    <input name="password" type="password" class="form-control" placeholder="密码" required="">
+                </div>
+                <button type="submit" class="btn btn-primary block full-width m-b">登录</button>
+
+                <a href="#"><small>忘记密码?</small></a>
+            </form>
+            <p class="m-t"> <small>东华大学毕业设计</small> </p>
+        </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="{% static 'admin/js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'admin/js/bootstrap.js' %}"></script>
+    <script src="{% static 'admin/js/popper.min.js' %}"></script>
+
+</body>
+
+</html>
