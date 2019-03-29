@@ -26,4 +26,5 @@ urlpatterns = [
 	path('result/error/', views.SearchResultErrorView.as_view(), name='search_result_error'),
 	path('object/', views.ObjectDetailView.as_view(), name='object_detail'),
 	path('object/<int:id>/', views.ObjectDetailView.as_view(), name='object_detail'),
+	path('example_list/', views.ExampleList.as_view(), name='example_list'),
 ]

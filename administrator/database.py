@@ -99,9 +99,9 @@ def load_search_node(id):
 	return data
 
 #加载节点上级的边的节点
-def load_up_node(id):
+def load_up_node(id,relationship):
 	neo_graph = get_graph()
-	results = neo_graph.run("match (m)-[r]->(n) where id(n)= " + str(id) + limit_str2 + " return m,id(m) ORDER BY m.search_times DESC").data()
+	results = neo_graph.run("match (m)-[r:"+ relationship + "]->(n) where id(n)= " + str(id) + limit_str2 + " return m,id(m) ORDER BY m.search_times DESC").data()
 	nodes = build_nodes(results, 'm')
 	return nodes
 
@@ -115,7 +115,7 @@ def load_down_node(id):
 
 #查找节点同级的节点
 def load_peer_node(id):
-	nodes = load_up_node(id)
+	nodes = load_up_node(id,'Kind_of')
 	results = []
 	for node in nodes:
 		mids = load_down_node(node['data']['id'])
@@ -155,7 +155,7 @@ def load_search_graph(id):
 #关键字搜索指定属性 返回ids
 def search_property(search,property):
 	neo_graph = get_graph()
-	results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*'" + limit_str2 +" RETURN *,id(n)").data()
+	results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*' RETURN *,id(n)").data()
 	ids = []
 	for result in results:
 		ids.append(result['id(n)'])
@@ -264,7 +264,7 @@ def add_relationship(idn,idm,relationship):
 		for result in results:
 			if result['type(r)'] == relationship:
 				return(relationship + "关系已存在")
-	neo_graph.run("MATCH (n),(m) WHERE id(n) = " + str(idn) + " and id(m) = " + str(idm) + "  CREATE (n)-[r:Kind_of]->(m)")
+	neo_graph.run("MATCH (n),(m) WHERE id(n) = " + str(idn) + " and id(m) = " + str(idm) + "  CREATE (n)-[r:" + relationship +"]->(m)")
 	return True
 
 

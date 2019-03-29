@@ -1,0 +1,42 @@
+{% extends 'index_nav.html' %}
+
+{% block content %}
+
+   {% for contact in contacts %}
+        <li>{{ contact|upper }}</li>
+    {% endfor %}
+
+    <h1>分页练习</h1>
+
+{% if contacts.has_previous %}
+    <li>上一页页码：{{ contacts.previous_page_number }}</li>
+    <a href="?page={{ contacts.previous_page_number }}">上一页</a>
+{% endif %}
+    <li>当前页码：{{ contacts.number }}</li>
+{% if contacts.has_next %}
+    <li>下一页页码：{{ contacts.next_page_number }}</li>
+    <a href="?page={{ contacts.next_page_number }}">下一页</a>
+{% endif %}
+
+    {{ contacts.start_index }}
+    {{ contacts.end_index }}
+
+   <p> 所有页码：</p>
+    <div class="pagetions">
+
+{% for page in pages %}
+    {% if page == contacts.number %}
+        <a class="active" href="?page={{ page }}">{{ page }}</a>
+    {% else %}
+        <a href="?page={{ page }}">{{ page }}</a>
+    {% endif %}
+{% endfor %}
+
+</div>
+总页数：{{ pagenums }}
+{% for gd in gd_page %}
+   <li>{{ gd }}</li>
+    {% endfor %}
+给定页码：{{ gd_page }}
+
+{% endblock %}

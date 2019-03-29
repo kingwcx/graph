@@ -93,7 +93,8 @@ class AdminSearchNodeView(View):
 labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计'}
 show_labels = {'Design': '服装设计','Style': '款式','Patternmaking': '制版','Technology': '工艺'}
 
-relationships = {'Kind_of': 'Kind_of','Join-of':'Join-of', 'Collocation-of':'Collocation-of'}
+relationships = {'Kind_of': 'Kind_of','Part_of': 'Part_of','Instance_of': 'Instance_of','Attribute_of': 'Attribute_of',
+				 'Join_of':'Join_of', 'Collocation_of':'Collocation_of'}
 
 
 # ajax返回所需标签
@@ -196,7 +197,7 @@ class FindByNameInterface(View):
 class FindUpByIdInterface(View):
 	def post(self, request, *args, **kwargs):
 		id = request.POST.get('id')
-		nodes = load_up_node(id)
+		nodes = load_up_node(id,'Kind_of')
 		return JsonResponse(nodes)
 
 #通过id返回下级节点
@@ -233,7 +234,7 @@ class AdminAddRelationshipInterface(View):
 				print(form.get_errors())
 				return HttpResponse(404)
 		except:
-			HttpResponse("提交了一个错误的参数")
+			return HttpResponse("提交了一个错误的参数")
 
 """上传图片"""
 class AdminUploadImageInterface(View):

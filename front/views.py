@@ -68,6 +68,21 @@ class SearchResultErrorView(View):
 	def get(self, request, *args, **kwargs):
 		return render(request, 'result_error.html')
 
+
+class ExampleList(ListView):
+	def get(self, request, *args, **kwargs):
+		LIST = []
+		for i in range(1, 102):
+			LIST.append(i)
+		paginator = Paginator(LIST, 10, orphans=2, )
+		pages = paginator.page_range  # 生成所有页码
+		pages_num = paginator.num_pages  # 总也数
+		gd_page = paginator.page(5)  # 调用指定页面的内容
+		page = request.GET.get('page')  # 当前页面
+		contacts = paginator.get_page(page)  # 当前页并具有处理超出页码范围的状况,页码不是数字返回第一页，超出返回最后一页
+		return render(request, 'example_list.html',
+					  {'contacts': contacts, 'pages': pages, 'pagenums': pages_num, 'gd_page': gd_page})
+
 #对象详情页面
 class ObjectDetailView(View):
 	def get(self,request,*args,**kwargs):
@@ -75,12 +90,14 @@ class ObjectDetailView(View):
 			id = kwargs['id']
 			all_imgs = get_all_down_image(id)
 			detail = load_search_node(id)
-			up_nodes = load_up_node(id)
+			up_nodes = load_up_node(id,'Kind_of')
+			up_nodes2 = load_up_node(id, 'Attribute_of')
 			down_nodes = load_down_node(id)
 			peer_nodes = load_peer_node(id)
 			#add_node_number(id,'search_times',1)
 			other_nodes = {
 				'up_nodes':up_nodes,
+				'up_nodes2':up_nodes2,
 				'down_nodes':down_nodes,
 				'peer_nodes':peer_nodes,
 			}
