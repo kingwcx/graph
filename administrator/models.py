@@ -30,5 +30,27 @@ class UserStudy(models.Model):
 	class Meta:
 		db_table = 'study_mid'
 
+#用户添加节点中间储存
+class UserNode(models.Model):
+	id = models.AutoField(primary_key=True)
+	name = models.CharField(null=True, blank=True,max_length=20)
+	english = models.CharField(null=True, blank=True,max_length=30)
+	description = models.CharField(null=True, blank=True,max_length=300)
+	url = models.CharField(null=True, blank=True,max_length=100)
+
+	class Meta:
+		db_table = 'user_node'
+
+
+# 用户添加节点中间储存
+class UserRelation(models.Model):
+	id = models.AutoField(primary_key=True)
+	sou_id = models.IntegerField(null=True, blank=True)
+	dst_id = models.IntegerField(null=True, blank=True)
+
+	class Meta:
+		db_table = 'user_relation'
+
+
 
 

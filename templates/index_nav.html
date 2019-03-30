@@ -10,6 +10,10 @@
         <!-- blueimp gallery -->
         <link rel="stylesheet" href="{% static 'admin/css/plugins/blueimp/css/blueimp-gallery.min.css' %}">
         <link rel="stylesheet" href="{% static 'admin/css/animate.css' %}">
+        <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+        <!-- slick carousel-->
+        <link rel="stylesheet" href="{% static 'admin/css/plugins/slick/slick.css' %}">
+        <link rel="stylesheet" href="{% static 'admin/css/plugins/slick/slick-theme.css' %}">
 
         <!-- Basic scripts -->
         <script src="{% static 'bootstrap/jquery/jquery-3.3.1.min.js' %}"></script>
@@ -28,8 +32,11 @@
 
         <!-- blueimp gallery -->
         <script src="{% static 'admin/js/plugins/blueimp/jquery.blueimp-gallery.min.js' %}"></script>
+
+        <!-- slick carousel-->
+        <script src="{% static 'admin/js/plugins/slick/slick.min.js' %}"></script>
     </head>
-    <body>
+    <body class="white-bg">
         {% if request.path == '/index/' %}
         <nav class="navbar navbar-default navbar-fixed-top">
         {% else %}
