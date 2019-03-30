@@ -84,7 +84,15 @@ class MessagesView(View):
 #学习推荐页面
 class StudyGuideView(View):
 	def get(self,request,*args,**kwargs):
-		return render(request, 'user_study_guide.html')
+		level = kwargs['level']
+		if level == 0:
+			ids_list = get_nodes_by_layer(0,2)
+			results = []
+			for id in ids_list:
+				results.append(load_search_node(id[0]))
+			return render(request, 'user_study_guide_base.html',context={'results':results})
+		else:
+			return HttpResponse(200)
 
 #用户添加节点页面
 class AddObjectView(View):

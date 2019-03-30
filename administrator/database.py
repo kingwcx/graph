@@ -354,11 +354,22 @@ def get_nodes_by_labels(label):
     return  data
 
 
-#查找指定指定层数的节点  BFS算法
-def get_nodes_by_layer(label):
-    neo_graph = get_graph()
-    results = neo_graph.run("MATCH (n:" + label + ") RETURN n,id(n)").data()
-    data = []
-    for result in results:
-        data.append(load_search_node(result['id(n)']))
-    return  data
+#查找指定指定层数的节点 返回所有节点层数和id BFS算法
+def get_nodes_by_layer(id,layer):
+    list = []
+    list.append([id,0])
+    for node in list:
+        if node[1] == layer:
+            break
+        else:
+            results = load_down_node(node[0])
+            for result in results:
+                list.append([int(result['data']['id']),node[1]+1])
+
+    #指定层数id
+    # ids = []
+    # for node in list:
+    #     if node[1] == layer:
+    #         ids.append(node[0])
+
+    return list

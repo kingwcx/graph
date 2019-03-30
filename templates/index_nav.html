@@ -63,8 +63,8 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">学习推荐 <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url 'user:study' %}">基础知识</a></li>
-                                <li><a href="{% url 'user:study' %}">进阶知识</a></li>
+                                <li><a href="{% url 'user:study' level=0 %}">基础知识</a></li>
+                                <li><a href="{% url 'user:study' level=1 %}">进阶知识</a></li>
                                 <li><a href="{% url 'front:example_list' %}">欣赏设计作品</a></li>
                                 <li><a href="#">查看流行趋势</a></li>
                             </ul>
@@ -81,15 +81,6 @@
                     {% endif %}
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="">
-                                <i class="fa fa-shopping-cart">
-                                    <span class="badge">
-                                        1
-                                    </span>
-                                </i>
-                            </a>
-                        </li>
                         <li class="dropdown">
                             {% if request.user.username != "" %}
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
@@ -105,7 +96,7 @@
 
                             <ul class="dropdown-menu">
                                 <li><a href="{% url 'user:profile' %}">个人信息</a></li>
-                                <li><a href="{% url 'user:messages' %}">消息</a></li>
+                                <li><a href="{% url 'user:messages' %}">消息中心</a></li>
                                 <li><a href="{% url 'user:add_object' %}">添加词条</li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{% url 'user:logout' %}">注销</a></li>

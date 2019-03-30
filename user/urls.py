@@ -25,6 +25,6 @@ urlpatterns = [
 	path('select/', views.SelectView.as_view(), name='select'),
 	path('profile/', views.ProfileView.as_view(), name='profile'),
 	path('messages/', views.MessagesView.as_view(), name='messages'),
-	path('study/', views.StudyGuideView.as_view(), name='study'),
+	path('study/<int:level>/', views.StudyGuideView.as_view(), name='study'),
 	path('add_object/', views.AddObjectView.as_view(), name='add_object'),
 ]
