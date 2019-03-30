@@ -71,7 +71,7 @@ class SearchResultErrorView(View):
 
 class ExampleList(ListView):
 	def get(self, request, *args, **kwargs):
-		LIST = get_nodes_bylabels("Example")
+		LIST = get_nodes_by_labels("Example")
 		paginator = Paginator(LIST, 20 )
 		pages = paginator.page_range  # 生成所有页码
 		pages_num = paginator.num_pages  # 总也数

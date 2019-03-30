@@ -67,16 +67,26 @@ class RegisterView(View):
 			return redirect(reverse('user:register'))
 
 #选择页面
-class Select(View):
+class SelectView(View):
 	def get(self,request,*args,**kwargs):
 		return render(request, 'user_select.html')
 
 #个人中心
-class Profile(View):
+class ProfileView(View):
 	def get(self,request,*args,**kwargs):
 		return render(request, 'user_profile.html')
 
-#搜索页面
+#个人中心
+class MessagesView(View):
+	def get(self,request,*args,**kwargs):
+		return render(request, 'user_messages.html')
+
+#学习推荐页面
+class StudyGuideView(View):
+	def get(self,request,*args,**kwargs):
+		return render(request, 'user_study_guide.html')
+
+#用户添加节点页面
 class AddObjectView(View):
 	def get(self,request,*args,**kwargs):
 		return render(request, 'user_add_object.html')

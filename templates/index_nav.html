@@ -56,10 +56,10 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">学习推荐 <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">基础知识</a></li>
-                                <li><a href="#">进阶知识</a></li>
+                                <li><a href="{% url 'user:study' %}">基础知识</a></li>
+                                <li><a href="{% url 'user:study' %}">进阶知识</a></li>
                                 <li><a href="{% url 'front:example_list' %}">欣赏设计作品</a></li>
-                                <li><a href="#">查看当季流行</a></li>
+                                <li><a href="#">查看流行趋势</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -97,8 +97,9 @@
                             {% endif %}
 
                             <ul class="dropdown-menu">
-                                <li><a href="">个人信息</a></li>
-                                <li><a href="">消息</li>
+                                <li><a href="{% url 'user:profile' %}">个人信息</a></li>
+                                <li><a href="{% url 'user:messages' %}">消息</a></li>
+                                <li><a href="{% url 'user:add_object' %}">添加词条</li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{% url 'user:logout' %}">注销</a></li>
                             </ul>

@@ -345,7 +345,7 @@ def get_all_down_image(id):
     return all_imgs
 
 #查找指定标签的所有节点
-def get_nodes_bylabels(label):
+def get_nodes_by_labels(label):
     neo_graph = get_graph()
     results = neo_graph.run("MATCH (n:" + label + ") RETURN n,id(n)").data()
     data = []
@@ -354,8 +354,8 @@ def get_nodes_bylabels(label):
     return  data
 
 
-#查找指定标签的所有节点
-def get_nodes_bylay(label):
+#查找指定指定层数的节点
+def get_nodes_by_layer(label):
     neo_graph = get_graph()
     results = neo_graph.run("MATCH (n:" + label + ") RETURN n,id(n)").data()
     data = []

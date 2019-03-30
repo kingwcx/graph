@@ -22,7 +22,9 @@ urlpatterns = [
 	path('login/', views.LoginView.as_view(), name='login'),
 	path('logout/', views.Logout, name='logout'),
 	path('register/', views.RegisterView.as_view(), name='register'),
-	path('select/', views.Select.as_view(), name='select'),
-	path('profile/', views.Profile.as_view(), name='profile'),
+	path('select/', views.SelectView.as_view(), name='select'),
+	path('profile/', views.ProfileView.as_view(), name='profile'),
+	path('messages/', views.MessagesView.as_view(), name='messages'),
+	path('study/', views.StudyGuideView.as_view(), name='study'),
 	path('add_object/', views.AddObjectView.as_view(), name='add_object'),
 ]
