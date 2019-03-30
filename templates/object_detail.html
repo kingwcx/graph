@@ -28,6 +28,12 @@
                                     <td><b>标签</b></td>
                                     <td>{{ labels }}</td>
                                 </tr>
+                                {% if labels == "Example" %}
+                                <tr>
+                                    <td><b>风格</b></td>
+                                    <td>{{ object.property.style }}</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
@@ -38,6 +44,12 @@
                                     <td><b>外文名</b></td>
                                     <td>{{ object.property.english }}</td>
                                 </tr>
+                                {% if labels == "Example" %}
+                                <tr>
+                                    <td><b>设计师</b></td>
+                                    <td>{{ object.property.designer }}</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>

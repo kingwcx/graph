@@ -1,42 +1,67 @@
 {% extends 'index_nav.html' %}
 
-{% block content %}
+{% block content %}\
+    <div class="row">
+        <div class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+            <div class="row">
+                {% for contact in contacts %}
+                    <div class="col-sm-6 col-md-3" >
+                        <div class="thumbnail">
+                            <a href="{% url 'front:object_detail' id=contact.id %}" class="thumbnail">
+                                <img class="img-thumbnail" src="{{ contact.property.img_url.0 }}" alt="..."
+                                     style="height: 130px">
+                            </a>
+                            <div class="caption">
+                                <h3>{{ contact.property.name }}</h3>
+                                <p>
+                                    <a href="{% url 'front:object_detail' id=contact.id %}"
+                                       class="btn btn-primary btn-sm"  role="button">查看详情</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <nav aria-label="Page navigation" class="text-center">
+            <ul class="pagination center-nav" >
+                {% if contacts.has_previous %}
+                    <li>
+                        <a href="?page={{ contacts.start_index }}" aria-hidden="true">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ contacts.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
 
-   {% for contact in contacts %}
-        <li>{{ contact|upper }}</li>
-    {% endfor %}
+                {% endif %}
+                {% for page in pages %}
+                    {% if page == contacts.number %}
+                        <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+                    {% else %}
+                        <li><a href="?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if contacts.has_next %}
+                    <li>
+                        <a href="?page={{ contacts.next_page_number }}" aria-hidden="true">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ contacts.end_index }}" aria-hidden="true">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 
-    <h1>分页练习</h1>
-
-{% if contacts.has_previous %}
-    <li>上一页页码：{{ contacts.previous_page_number }}</li>
-    <a href="?page={{ contacts.previous_page_number }}">上一页</a>
-{% endif %}
-    <li>当前页码：{{ contacts.number }}</li>
-{% if contacts.has_next %}
-    <li>下一页页码：{{ contacts.next_page_number }}</li>
-    <a href="?page={{ contacts.next_page_number }}">下一页</a>
-{% endif %}
-
-    {{ contacts.start_index }}
-    {{ contacts.end_index }}
-
-   <p> 所有页码：</p>
-    <div class="pagetions">
-
-{% for page in pages %}
-    {% if page == contacts.number %}
-        <a class="active" href="?page={{ page }}">{{ page }}</a>
-    {% else %}
-        <a href="?page={{ page }}">{{ page }}</a>
-    {% endif %}
-{% endfor %}
-
-</div>
-总页数：{{ pagenums }}
-{% for gd in gd_page %}
-   <li>{{ gd }}</li>
-    {% endfor %}
-给定页码：{{ gd_page }}
 
 {% endblock %}

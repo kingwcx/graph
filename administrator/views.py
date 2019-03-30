@@ -90,7 +90,7 @@ class AdminSearchNodeView(View):
 
 
 # 标签清单
-labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计'}
+labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计','Example':'成衣实例'}
 show_labels = {'Design': '服装设计','Style': '款式','Patternmaking': '制版','Technology': '工艺'}
 
 relationships = {'Kind_of': 'Kind_of','Part_of': 'Part_of','Instance_of': 'Instance_of','Attribute_of': 'Attribute_of',
