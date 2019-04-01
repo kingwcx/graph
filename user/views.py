@@ -2,8 +2,9 @@ from django.shortcuts import render,redirect,reverse
 from django.http import JsonResponse, HttpResponse
 # 数据库
 from administrator.database import *
+from administrator.models import *
 #表单
-from administrator.forms import LoginForm,RegisterForm
+from administrator.forms import LoginForm,RegisterForm,NodeForm
 # 视图
 from django.views import View
 from django.views.generic.list import ListView
@@ -92,9 +93,38 @@ class StudyGuideView(View):
 				results.append(load_search_node(id[0]))
 			return render(request, 'user_study_guide_base.html',context={'results':results})
 		else:
-			return HttpResponse(200)
+			results = []
+			results.append(load_search_node(1))
+			results.append(load_search_node(2))
+			results.append(load_search_node(3))
+			return render(request, 'user_study_guide_up.html',context={'results':results})
 
+labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计','Example':'成衣实例'}
 #用户添加节点页面
 class AddObjectView(View):
 	def get(self,request,*args,**kwargs):
-		return render(request, 'user_add_object.html')
+		return render(request, 'user_add_object.html',context={'labels':labels})
+	def post(self,request,*args,**kwargs):
+		form = NodeForm(request.POST)
+		if form.is_valid():
+			description = form.cleaned_data.get('description')
+			name = form.cleaned_data.get('name')
+			english = form.cleaned_data.get('english')
+			label = form.cleaned_data.get('label')
+			url = form.cleaned_data.get('url')
+
+			user_id = request.user.id
+			node = UserNode(name=name,description=description,english=english,label=label,url=url,user_id = user_id)
+			node.save()
+			return redirect(reverse('user:profile'))
+		else:
+			print(form.errors.get_json_data())
+			print(form.get_errors())
+			try:
+				print(form.get_errors()['__all__'])
+				name = form.get_errors()['__all__']
+			except:
+				name = ""
+
+			return render(request, 'user_add_object.html', context={"labels": labels, "errors": form.get_errors(),
+																   "name": name})

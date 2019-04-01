@@ -36,7 +36,11 @@ class UserNode(models.Model):
 	name = models.CharField(null=True, blank=True,max_length=20)
 	english = models.CharField(null=True, blank=True,max_length=30)
 	description = models.CharField(null=True, blank=True,max_length=300)
+	label = models.CharField(null=True, blank=True,max_length=10)
 	url = models.CharField(null=True, blank=True,max_length=100)
+
+	# 多对一外键
+	user = models.ForeignKey(User,on_delete=models.CASCADE)
 
 	class Meta:
 		db_table = 'user_node'

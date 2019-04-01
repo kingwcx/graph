@@ -53,6 +53,14 @@ class AdminIndexView(View):
 	def get(self, request, *args, **kwargs):
 		return render(request, 'admin_home.html')
 
+class AdminUserListView(View):
+	def get(self, request, *args, **kwargs):
+		return render(request, 'admin_user_list.html')
+
+class AdminVerifyView(View):
+	def get(self, request, *args, **kwargs):
+		return render(request, 'admin_verify.html')
+
 
 show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
 

@@ -15,6 +15,15 @@
         <link rel="stylesheet" href="{% static 'admin/css/plugins/slick/slick.css' %}">
         <link rel="stylesheet" href="{% static 'admin/css/plugins/slick/slick-theme.css' %}">
 
+        <style>
+            .form-control{
+                font-size: small;
+            }
+            select.form-control:not([size]):not([multiple]){
+                height: fit-content;
+            }
+        </style>
+
         <!-- Basic scripts -->
         <script src="{% static 'bootstrap/jquery/jquery-3.3.1.min.js' %}"></script>
         <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>

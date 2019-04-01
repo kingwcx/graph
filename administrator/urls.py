@@ -40,4 +40,7 @@ urlpatterns = [
 	path('find/node', views.FindByIdInterface.as_view(), name='find_node'),
 	path('find/node/name', views.FindByNameInterface.as_view(), name='find_node_name'),
 
+	path('user', views.AdminUserListView.as_view(), name='user_list'),
+	path('verify', views.AdminVerifyView.as_view(), name='verify'),
+
 ]
