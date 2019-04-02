@@ -60,7 +60,7 @@ class AdminUserListView(View):
 
 		paginator = Paginator(users, 10)
 		pages = paginator.page_range  # 生成所有页码
-		pages_num = paginator.num_pages  # 总也数
+		pages_num = paginator.num_pages  # 总页数
 
 		page = request.GET.get('page')  # 当前页面
 		contacts = paginator.get_page(page)  # 当前页并具有处理超出页码范围的状况,页码不是数字返回第一页，超出返回最后一页
@@ -82,6 +82,11 @@ class AdminVerifyView(View):
 		page = request.GET.get('page')  # 当前页面;[
 		contacts = paginator.get_page(page)  # 当前页并具有处理超出页码范围的状况,页码不是数字返回第一页，超出返回最后一页
 		return render(request, 'admin_verify.html',context={'contacts': contacts, 'pages': pages, 'pagenums': pages_num})
+
+class AdminVerifyDetailView(View):
+	def get(self, request, *args, **kwargs):
+		node = UserNode.objects.get(id=kwargs['verify_id'])
+		return render(request, 'admin_verify_detail.html', context={"node": node})
 
 
 show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}

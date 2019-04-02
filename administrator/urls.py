@@ -44,5 +44,6 @@ urlpatterns = [
 	path('get_info', views.AdminGetMessageInterface, name='get_info'),
 	path('user/detail/<int:user_id>', views.AdminUserDetailView.as_view(), name='user_detail'),
 	path('verify', views.AdminVerifyView.as_view(), name='verify'),
+	path('verify/detail/<int:verify_id>', views.AdminVerifyDetailView.as_view(), name='verify_detail'),
 
 ]

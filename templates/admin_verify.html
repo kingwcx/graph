@@ -48,9 +48,9 @@
                             {% for contact in contacts %}
                                 <tr>
                                     <td>{{ contact.name }}</td>
-                                    <td><a href="{% url 'admin:user_detail' user_id=contact.id %}">{{ contact.user.username }}</a></td>
+                                    <td><a href="{% url 'admin:user_detail' user_id=contact.user_id %}">{{ contact.user.username }}</a></td>
                                     <td>创建</td>
-                                    <td><span class="label label-primary">查看</span></td>
+                                    <td><a href="{% url 'admin:verify_detail' verify_id=contact.id%}"><span class="label label-primary" >查看</span></a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
