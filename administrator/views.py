@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.core.files import  *
 # 数据库
 from .database import *
+from .models import *
 # 表单验证
 from .forms import LoginForm,RegisterForm,NodeForm,RelationshipForm
 # 用户与权限
@@ -55,11 +56,32 @@ class AdminIndexView(View):
 
 class AdminUserListView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_user_list.html')
+		users = User.objects.all()
+
+		paginator = Paginator(users, 10)
+		pages = paginator.page_range  # 生成所有页码
+		pages_num = paginator.num_pages  # 总也数
+
+		page = request.GET.get('page')  # 当前页面
+		contacts = paginator.get_page(page)  # 当前页并具有处理超出页码范围的状况,页码不是数字返回第一页，超出返回最后一页
+		return render(request, 'admin_user_list.html',context={'contacts': contacts, 'pages': pages, 'pagenums': pages_num})
+
+class AdminUserDetailView(View):
+	def get(self, request, *args, **kwargs):
+		user = User.objects.get(id=kwargs['user_id'])
+		return render(request, 'admin_user_detail.html', context={"user": user})
 
 class AdminVerifyView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'admin_verify.html')
+		nodes = UserNode.objects.all()
+
+		paginator = Paginator(nodes, 10)
+		pages = paginator.page_range  # 生成所有页码
+		pages_num = paginator.num_pages  # 总也数
+
+		page = request.GET.get('page')  # 当前页面;[
+		contacts = paginator.get_page(page)  # 当前页并具有处理超出页码范围的状况,页码不是数字返回第一页，超出返回最后一页
+		return render(request, 'admin_verify.html',context={'contacts': contacts, 'pages': pages, 'pagenums': pages_num})
 
 
 show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
@@ -140,6 +162,20 @@ class AdminEditRelationshipView(View):
 
 """
 接口
+"""
+"""获取消息接口"""
+def AdminGetMessageInterface(request):
+	results = UserNode.objects.all().values()
+	nodes = []
+	for result in results:
+		print(result)
+		nodes.append(result)
+
+	data={'nodes':nodes}
+	return JsonResponse(data)
+
+"""
+neo4j接口
 """
 
 """添加节点接口"""

@@ -118,50 +118,22 @@
                         </li>
                         <li class="dropdown">
                             <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                                <i class="fa fa-envelope"></i>  <span class="label label-warning">16</span>
+                                <i class="fa fa-envelope"></i>  <span id="message_number" class="label label-warning"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-messages dropdown-menu-right">
                                 <li>
                                     <div class="dropdown-messages-box">
-                                        <a class="dropdown-item float-left" href="profile.html">
-                                            <img alt="image" class="rounded-circle" src="{% static 'admin/img/profile.jpg' %}">
-                                        </a>
-                                        <div class="media-body ">
-                                            <small class="float-right">23h ago</small>
-                                            <strong>Monica Smith</strong> love <strong>Kim Smith</strong>. <br>
-                                            <small class="text-muted">2 days ago at 2:30 am - 11.06.2014</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="dropdown-divider"></li>
-                                <li>
-                                    <div class="text-center link-block">
-                                        <a href="mailbox.html" class="dropdown-item">
-                                            <i class="fa fa-envelope"></i> <strong>Read All Messages</strong>
-                                        </a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                                <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-alerts">
-                                <li>
-                                    <a href="mailbox.html" class="dropdown-item">
-                                        <div>
-                                            <i class="fa fa-envelope fa-fw"></i> You have 16 messages
+                                        <div id="message_number2">
+                                            <i class="fa fa-envelope fa-fw"></i> 你有0条消息未处理
                                             <span class="float-right text-muted small">4 minutes ago</span>
                                         </div>
-                                    </a>
+                                    </div>
                                 </li>
                                 <li class="dropdown-divider"></li>
                                 <li>
                                     <div class="text-center link-block">
-                                        <a href="notifications.html" class="dropdown-item">
-                                            <strong>See All Alerts</strong>
-                                            <i class="fa fa-angle-right"></i>
+                                        <a href="{% url 'admin:verify' %}" class="dropdown-item">
+                                            <i class="fa fa-envelope"></i> <strong>查看所有消息</strong>
                                         </a>
                                     </div>
                                 </li>
@@ -334,5 +306,25 @@
 
     <!-- ChartJS-->
     <script src="{% static 'admin/js/plugins/chartJs/Chart.min.js' %}"></script>
+
+    <script>
+        $(document).ready(function(){
+            GetMmessage();
+        });
+        function GetMmessage(){
+            $.post("{% url 'admin:get_info' %}",function(data){
+                if(data.nodes.length>0){
+                    $("#message_number").text(data.nodes.length);
+                    $("#message_number2").text("你有"+data.nodes.length+"条消息未处理");
+                }else{
+                    $("#message_number").text("");
+                    $("#message_number2").text("");
+                }
+                for(i=0;i<data.nodes.length;i++) {
+
+                }
+            });
+        }
+    </script>
 </body>
 </html>

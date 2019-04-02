@@ -41,6 +41,8 @@ urlpatterns = [
 	path('find/node/name', views.FindByNameInterface.as_view(), name='find_node_name'),
 
 	path('user', views.AdminUserListView.as_view(), name='user_list'),
+	path('get_info', views.AdminGetMessageInterface, name='get_info'),
+	path('user/detail/<int:user_id>', views.AdminUserDetailView.as_view(), name='user_detail'),
 	path('verify', views.AdminVerifyView.as_view(), name='verify'),
 
 ]

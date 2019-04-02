@@ -39,6 +39,8 @@ class UserNode(models.Model):
 	label = models.CharField(null=True, blank=True,max_length=10)
 	url = models.CharField(null=True, blank=True,max_length=100)
 
+	creat_time = models.DateTimeField(blank=True, auto_now_add=True)
+
 	# 多对一外键
 	user = models.ForeignKey(User,on_delete=models.CASCADE)
 
