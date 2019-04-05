@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 #json
 import json
+from ast import literal_eval
 
 
 """
@@ -43,15 +44,16 @@ class SearchActionView(View):
 				ids = search(search_key)
 				data = {}
 				if ids != []:
-					ids = list(set(ids))
 					for id in ids:
 						result = load_search_node(id)
 						data[id] = result['property']['name']
+
 					return render(request, 'result.html',context={'ids':ids,'data':data})
 				else:
 					print("没有找到你要的内容!")
 					return render(request, 'result_error.html',context={'error':"没有找到你要的内容!",'search':search})
-			except:
+			except Exception as e:
+				print(e)
 				print("服务器错误！")
 				return render(request, 'result_error.html')
 		else:
@@ -81,7 +83,7 @@ class ExampleList(ListView):
 		return render(request, 'example_list.html',
 					  {'contacts': contacts, 'pages': pages, 'pagenums': pages_num})
 
-#对象详情页面
+#知识详情页面
 class ObjectDetailView(View):
 	def get(self,request,*args,**kwargs):
 		try:
@@ -102,12 +104,53 @@ class ObjectDetailView(View):
 			#print(detail['property']['img_url'])
 			return render(request, 'object_detail.html',
 						  context={"object": detail,"labels":detail['label'],'other_nodes':other_nodes,'all_imgs':all_imgs})
+		except Exception as e:
+			print(e)
+			return HttpResponse("DetailView404")
+
+	def post(self,request,*args,**kwargs):
+		try:
+			id = request.POST.get('id')
+			detail = load_search_node(id)
+			if detail['label'] == 'StyleDesignExample':
+				return redirect(reverse('front:example_detail', kwargs = {"id": id}))
+			else:
+				return redirect(reverse('front:object_detail', kwargs={"id": id}))
 		except:
+			return HttpResponse("DetailView404")
+
+#实例详情页面
+class ExampleDetailView(View):
+	def get(self,request,*args,**kwargs):
+		try:
+			id = kwargs['id']
+			all_imgs = get_all_down_image(id)
+			detail = load_search_node(id)
+			# images = literal_eval(detail['property']['images'])
+			# for image in images:
+			# 	all_imgs.append(image['src'])
+			up_nodes = load_up_node(id,'Kind_of')
+			up_nodes2 = load_up_node(id, 'Attribute_of')
+			down_nodes = load_down_node(id)
+			peer_nodes = load_peer_node(id)
+			#add_node_number(id,'search_times',1)
+			other_nodes = {
+				'up_nodes':up_nodes,
+				'up_nodes2':up_nodes2,
+				'down_nodes':down_nodes,
+				'peer_nodes':peer_nodes,
+			}
+			#print(detail['property']['img_url'])
+			return render(request, 'object_detail.html',
+						  context={"object": detail,"labels":detail['label'],'other_nodes':other_nodes,'all_imgs':all_imgs})
+		except Exception as e:
+			print(e)
 			return HttpResponse("DetailView404")
 
 	def post(self,request,*args,**kwargs):
 		try:
 			id = request.POST.get('id')
 			return redirect(reverse('front:object_detail', kwargs = {"id": id}))
-		except:
+		except Exception as e:
+			print(e)
 			return HttpResponse("DetailView404")

@@ -8,6 +8,7 @@ from py2neo import *
 from .models import *
 import json
 import os
+from ast import literal_eval
 
 
 # neo4j链接
@@ -156,8 +157,6 @@ def load_search_graph(id):
     # error 改m，与n对其的关系
     edges2 = build_edges(results2)
     nodes2 = build_nodes(results2, 'm')
-    print(nodes2)
-    print(edges2)
     for node in nodes2:
         nodes.append(node)
     for edge in edges2:
@@ -177,7 +176,7 @@ def load_search_graph(id):
 # 关键字搜索指定属性 返回ids
 def search_property(search, property):
     neo_graph = get_graph()
-    results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*' RETURN *,id(n)").data()
+    results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*' RETURN *,id(n) ORDER BY n.id").data()
     ids = []
     for result in results:
         ids.append(result['id(n)'])
@@ -193,7 +192,12 @@ def search(search):
         ids.append(result['id(n)'])
     for result in results2:
         ids.append(result['id(n)'])
-    return ids
+
+
+    ids_new = set(ids)
+    ids_new = list(set(ids))
+    ids_new.sort(key=ids.index)
+    return ids_new
 
 
 # 添加节点
@@ -329,6 +333,12 @@ def get_img(id):
             imgs.extend([])
         else:
             imgs.extend(node['property']['img_url'])
+        if node['property']['images'] == None:
+            imgs.extend([])
+        else:
+            nodeimages = literal_eval(node['property']['images'])
+            for img in nodeimages:
+                imgs.append(img['src'])
         imgs.extend(get_img(node['id']))
 
     return imgs
@@ -341,6 +351,13 @@ def get_all_down_image(id):
         all_imgs.extend([])
     else:
         all_imgs.extend(node['property']['img_url'])
+
+    if node['property']['images'] == None:
+        all_imgs.extend([])
+    else:
+        nodeimages = literal_eval(node['property']['images'])
+        for img in nodeimages:
+            all_imgs.append(img['src'])
     all_imgs.extend(get_img(id))
     return all_imgs
 

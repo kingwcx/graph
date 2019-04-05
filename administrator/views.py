@@ -117,7 +117,8 @@ class AdminSearchNodeView(View):
 				else:
 					print("没有找到你要的内容!")
 					return redirect(reverse('admin:search_node'))
-			except:
+			except Exception as e:
+				print(e)
 				print("服务器错误！")
 				return redirect(reverse('admin:search_node'))
 		else:
@@ -173,7 +174,6 @@ def AdminGetMessageInterface(request):
 	results = UserNode.objects.all().values()
 	nodes = []
 	for result in results:
-		print(result)
 		nodes.append(result)
 
 	data={'nodes':nodes}
@@ -203,7 +203,8 @@ class AdminAddNodeInterface(View):
 			try:
 				print(form.get_errors()['__all__'])
 				name = form.get_errors()['__all__']
-			except:
+			except Exception as e:
+				print(e)
 				name = ""
 
 			return render(request, 'admin_add_node.html', context={"labels": labels, "errors": form.get_errors(),
