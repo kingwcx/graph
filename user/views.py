@@ -24,7 +24,7 @@ import json
 """
 class LoginView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'login.html')
+		return render(request, 'user/login.html')
 
 	def post(self, request, *args, **kwargs):
 		form = LoginForm(request.POST)
@@ -52,7 +52,7 @@ def Logout(request):
 
 class RegisterView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'register.html')
+		return render(request, 'user/register.html')
 
 	def post(self, request, *args, **kwargs):
 		form = RegisterForm(request.POST)
@@ -70,40 +70,40 @@ class RegisterView(View):
 #选择页面
 class SelectView(View):
 	def get(self,request,*args,**kwargs):
-		return render(request, 'user_select.html')
+		return render(request, 'user/user_select.html')
 
 #个人中心
 class ProfileView(View):
 	def get(self,request,*args,**kwargs):
-		return render(request, 'user_profile.html')
+		return render(request, 'user/user_profile.html')
 
 #个人中心
 class MessagesView(View):
 	def get(self,request,*args,**kwargs):
-		return render(request, 'user_messages.html')
+		return render(request, 'user/user_messages.html')
 
 #学习推荐页面
 class StudyGuideView(View):
 	def get(self,request,*args,**kwargs):
 		level = kwargs['level']
 		if level == 0:
-			ids_list = get_nodes_by_layer(0,2)
+			ids_list = get_nodes_by_layer(46,2)
 			results = []
 			for id in ids_list:
 				results.append(load_search_node(id[0]))
-			return render(request, 'user_study_guide_base.html',context={'results':results})
+			return render(request, 'user/user_study_guide_base.html', context={'results':results})
 		else:
 			results = []
-			results.append(load_search_node(1))
-			results.append(load_search_node(2))
-			results.append(load_search_node(3))
-			return render(request, 'user_study_guide_up.html',context={'results':results})
+			results.append(load_search_node(46))
+			results.append(load_search_node(47))
+			results.append(load_search_node(48))
+			return render(request, 'user/user_study_guide_up.html', context={'results':results})
 
 labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计','Example':'成衣实例'}
 #用户添加节点页面
 class AddObjectView(View):
 	def get(self,request,*args,**kwargs):
-		return render(request, 'user_add_object.html',context={'labels':labels})
+		return render(request, 'user/user_add_object.html', context={'labels':labels})
 	def post(self,request,*args,**kwargs):
 		form = NodeForm(request.POST)
 		if form.is_valid():
@@ -126,5 +126,5 @@ class AddObjectView(View):
 			except:
 				name = ""
 
-			return render(request, 'user_add_object.html', context={"labels": labels, "errors": form.get_errors(),
+			return render(request, 'user/user_add_object.html', context={"labels": labels, "errors": form.get_errors(),
 																   "name": name})

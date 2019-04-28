@@ -1,0 +1,106 @@
+{% extends 'admin/admin_nav.html' %}
+
+{% block content %}
+    <div id="main" style="height: 600px;">
+        <H2>概念集合 <small></small></H2>
+        <hr>
+        <div class="row">
+            <div class="col-lg-3">
+                <select class="form-control m-b" name="label">
+                    {% for key,value in labels.items %}
+                        <option value={{ key }}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div id="cy" class="col-lg-12 col-md-12" style="height: 400px; background: #f9f9f9; text-align: initial">
+        </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <a href="{% url "admin:add_node_view" %}" class="btn btn-default btn-md" role="button">添加节点</a>
+                <a href="{% url "admin:add_relationship_view" %}" class="btn btn-default btn-md" role="button">添加关系</a>
+            </div>
+        </div>
+
+    </div>
+    <script>
+    var elements = {{ element|safe }};
+        var jq = $.noConflict();
+        jq(document).ready(function(){
+            var style = [
+                { selector: 'node[label = "Design"]',
+                    style: {
+                        'background-color': '#c0fcb0',
+                        'content': 'data(name)',
+                        'height': '50px',
+                        'width': '50px',
+                        //'text-valign': 'center',
+                        //'text-halign': 'center',
+                    }
+                },
+                { selector: 'node[label = "Pattern"]',
+                    style: {
+                        'background-color': '#6FB1FC',
+                        'content': 'data(name)',
+                        'height': '50px',
+                        'width': '50px',
+                        //'text-valign': 'center',
+                        //'text-halign': 'center',
+                        }
+                },
+                { selector: 'node[label = "Style"]',
+                    style: {
+                        'background-color': '#00fce0',
+                        'content': 'data(name)',
+                        'height': '50px',
+                        'width': '50px',
+                        //'text-valign': 'center',
+                        //'text-halign': 'center',
+                        }
+                },
+                { selector: 'node[label = "Technology"]',
+                    style: {
+                        'background-color': '#39fc9b',
+                        'content': 'data(name)',
+                        'height': '50px',
+                        'width': '50px',
+                        //'text-valign': 'center',
+                        //'text-halign': 'center',
+                        }
+                },
+                { selector: 'edge',
+                    style: {
+                        'content': 'data(relationship)',
+                        'curve-style': 'bezier',
+                        'target-arrow-shape': 'triangle'}
+                },
+            ];
+
+            var layout = {
+                name: 'concentric',
+                fit:true,
+                padding: 30, // the padding on fit
+                startAngle:4/ 2 * Math.PI, // where nodes start in radians
+                sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+                clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+                equidistant: true, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                minNodeSpacing: 100 ,// min spacing between outside of nodes (used for radius adjustment)
+            };
+
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                style:style,
+                elements:elements,
+                layout: layout,
+
+            });
+            cy.on('tap', 'node', function(evt){
+                var node = evt.target;
+                console.log( 'tapped ' + node.id());
+            });
+        });
+    </script>
+{% endblock %}

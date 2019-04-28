@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title> 登录</title>
+
+    <link href="{% static 'admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'admin/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+
+    <link href="{% static 'admin/css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'admin/css/style.css' %}" rel="stylesheet">
+
+</head>
+
+<body class="white-bg">
+
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <div>
+            <div>
+
+                <h1 class="logo-name">DE</h1>
+
+            </div>
+            <h3>欢迎来到服装设计世界</h3>
+
+            <form class="m-t" role="form" action="{% url 'user:login' %}" method="post">
+                <div class="form-group">
+                    <input name="username" type="text" class="form-control" placeholder="用户名" required="">
+                </div>
+                <div class="form-group">
+                    <input name="password" type="password" class="form-control" placeholder="密码" required="">
+                </div>
+                <button type="submit" class="btn btn-primary block full-width m-b">登录</button>
+
+                <a href="#"><small>忘记密码?</small></a>
+
+                <p class="text-muted text-center"><small>还没有账户?</small></p>
+                <a class="btn btn-sm btn-white btn-block" href="{% url 'user:register' %}">创建一个账户</a>
+            </form>
+            <p class="m-t"> <small>东华大学毕业设计</small> </p>
+        </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="{% static 'admin/js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'admin/js/bootstrap.js' %}"></script>
+    <script src="{% static 'admin/js/popper.min.js' %}"></script>
+
+</body>
+
+</html>

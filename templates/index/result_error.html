@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>设计师学习</title>
+    {% include 'import_base.html' %}
+    <!-- cytoscape -->
+    <script src="{% static 'cytoscape/cytoscape.min.js' %}"></script>
+</head>
+<body>
+    {% include 'index/index_nav.html' %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="jumbotron" style="background-color: white">
+                <h1>很抱歉</h1>
+                <p>{{ error }}</p>
+                <p><a class="btn btn-primary btn-sm" href="{% url 'front:search' %}" role="button">搜索其他</a></p>
+                <p><a class="btn btn-primary btn-sm" href="{% url 'user:add_object' %}" role="button">添加词条</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -19,6 +19,8 @@ from . import views
 app_name = 'admin'
 
 urlpatterns = [
+	path('test/', views.TestView.as_view(), name='test'),
+
 	path('', views.AdminIndexView.as_view(), name='index'),
 	path('login/', views.AdminLoginView.as_view(), name='login'),
 	path('logout/', views.AdminLogout, name='logout'),
@@ -37,7 +39,9 @@ urlpatterns = [
 	path('upload_images/<int:id>/', views.AdminUploadImageInterface .as_view(), name='upload_images'),
 	path('delete_images/', views.AdminDeleteImageInterface.as_view(), name='delete_images'),
 
+	path('find/graph', views.FindGraphInterface.as_view(), name='find_graph'),
 	path('find/node', views.FindByIdInterface.as_view(), name='find_node'),
+	path('find/node/label', views.FindByLabelInterface.as_view(), name='find_label'),
 	path('find/node/name', views.FindByNameInterface.as_view(), name='find_node_name'),
 
 	path('user', views.AdminUserListView.as_view(), name='user_list'),

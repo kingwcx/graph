@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>设计师学习</title>
+    {% include 'import_base.html' %}
+    <link rel="stylesheet" href="{% static 'admin/css/plugins/blueimp/css/blueimp-gallery.min.css' %}">
+    <!-- blueimp gallery -->
+    <script src="{% static 'admin/js/plugins/blueimp/jquery.blueimp-gallery.min.js' %}"></script>
+</head>
+<body>
+    {% include 'index/index_nav.html' %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-1">
+                <div class="row">
+                    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
+                        <div class="row">
+                            <form action="{% url 'admin:edit_node_view_post' %}" method="post">
+                                <input class="hidden" id="detail-ibox-input" name="id" type="text" value="{{ object.id }}" style="display: none">
+                                <h2>{{ object.property.name }}
+                                    <small>
+                                    <button href="" type="submit" role="button" class="btn btn-default btn-sm" >
+                                        <i class="fa fa-edit"></i>编辑
+                                    </button></small>
+                                </h2>
+                            </form>
+                            <p style="text-indent:2em;">{{ object.property.description }}</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <table class="table table-condensed">
+                                    <tbody>
+                                        <tr>
+                                            <td><b>中文名</b></td>
+                                            <td>{{ object.property.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>标签</b></td>
+                                            <td>{{ labels }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <table class="table table-condensed">
+                                    <tbody>
+                                        <tr>
+                                            <td><b>外文名</b></td>
+                                            <td>{{ object.property.english }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            {% for key,values in custom.items %}
+                                <h3>{{ key }}
+                                    <small><button type="button" class="btn btn-default btn-xs" >
+                                        <i class="fa fa-edit"></i>编辑</button>
+                                    </small>
+                                </h3>
+                                {% for p in values %}
+                                <p style="text-indent:2em;">{{ p }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        {% if object.property.url != None and object.property.url != ' ' and object.property.url != '' %}
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <p>相关链接</p><a href="{{ object.property.url }}">{{ object.property.url }}</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="lightBoxGallery">
+                                    {% for url in all_imgs %}
+                                        {% if forloop.counter <= 4 %}
+                                            <a href="{{ url }}" class="col-md-3" title="{{ object.property.name }}" data-gallery="">
+                                                <img class="img-thumbnail center-block" src="{{ url }}"
+                                                     style="width: 100%;height: 100px">
+                                            </a>
+                                        {% else %}
+                                             <a href="{{ url }}" class="col-md-3" title="{{ object.property.name }}" data-gallery="">
+                                                <img class="img-thumbnail hidden" src="{{ url }}">
+                                             </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
+                        <p id="p1"><strong>相关知识</strong><i class="fa fa-angle-down pull-right"></i></p>
+                        <div id="relation1" class="row">
+                            {% for up_node in other_nodes.up_nodes_part %}
+                                {% if forloop.counter <= 1 %}
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
+                                        <div class="thumbnail">
+                                            <!--img src="" alt="..."-->
+                                            <div class="caption">
+                                                <h3>{{ up_node.data.name }}</h3>
+                                                <p>
+                                                    <a href="{% url 'front:object_detail' id=up_node.data.id %}" class="btn btn-primary" role="button">查看详情</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% for down_node in other_nodes.down_nodes_part %}
+                                {% if forloop.counter <= 3 %}
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
+                                        <div class="thumbnail">
+                                            <!--img src="" alt="..."-->
+                                            <div class="caption">
+                                                {% if down_node.data.name|length > 8 %}
+                                                    <h3>{{ down_node.data.name|truncatechars:11 }}...</h3>
+                                                {% else %}
+                                                   <h3>{{ down_node.data.name }}</h3>
+                                                {% endif %}
+                                                <p>
+                                                    <a href="{% url 'front:object_detail' id=down_node.data.id %}" class="btn btn-primary" role="button">查看详情</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% if other_nodes.up_nodes_part.0.data.name == None %}
+
+                        {% else %}
+                            <p id="p2"><strong>{{ other_nodes.up_nodes_part.0.data.name }}</strong><i class="fa fa-angle-down pull-right"></i></p>
+                            <div id="relation2" class="row">
+                                {% for peer_node in other_nodes.peer_nodes %}
+                                    {% if forloop.counter <= 3 %}
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
+                                            <div class="thumbnail">
+                                                <!--img src="" alt="..."-->
+                                                <div class="caption">
+                                                    {% if peer_node.data.name|length > 8 %}
+                                                        <h3>{{ peer_node.data.name|truncatechars:11 }}...</h3>
+                                                    {% else %}
+                                                       <h3>{{ peer_node.data.name }}</h3>
+                                                    {% endif %}
+                                                    <p>
+                                                        <a href="{% url 'front:object_detail' id=peer_node.data.id %}" class="btn btn-primary" role="button">查看详情</a>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <p id="p3"><strong>相关实例</strong><i class="fa fa-angle-down pull-right"></i></p>
+                        <div id="relation3" class="row">
+                            {% for peer_node in other_nodes.down_nodes_instance %}
+                                {% if forloop.counter <= 3 %}
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
+                                        <div class="thumbnail">
+                                            <!--img src="" alt="..."-->
+                                            <div class="caption">
+                                                {% if peer_node.data.name|length > 8 %}
+                                                    <h3>{{ peer_node.data.name|truncatechars:11 }}...</h3>
+                                                {% else %}
+                                                   <h3>{{ peer_node.data.name }}</h3>
+                                                {% endif %}
+                                                <p>
+                                                    <a href="{% url 'front:object_detail' id=peer_node.data.id %}" class="btn btn-success btn-primary" role="button">查看详情</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- The Gallery as lightbox dialog, should be a child element of the document body -->
+        </div>
+    </div>
+
+    <div id="blueimp-gallery" class="blueimp-gallery">
+        <div class="slides"></div>
+        <h3 class="title"></h3>
+        <a class="prev">‹</a>
+        <a class="next">›</a>
+        <a class="close">×</a>
+        <a class="play-pause"></a>
+        <ol class="indicator"></ol>
+    </div>
+    <script>
+        $("#p1").click(function(){
+            $("#relation1").slideToggle();
+        });
+        $("#p2").click(function(){
+            $("#relation2").slideToggle();
+        });
+        $("#p3").click(function(){
+            $("#relation3").slideToggle();
+        });
+        $.ajaxSetup({
+            async : false
+        });
+    </script>
+</body>
+</html>

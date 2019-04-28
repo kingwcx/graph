@@ -51,9 +51,83 @@ class Technology(GraphObject):
     search_times = Property(0)
 
 
-limit_str = "where not (n:Example)"
-limit_str2 = " and not (n:Example)"
 """函数"""
+#D3使用
+def build_node_d3(nodeRecord):
+    data = {"id": int(nodeRecord['id']),
+            "name": str(nodeRecord['property']['name']),
+            "property": (nodeRecord['property']),
+            "label": nodeRecord['label']}
+
+    return data
+
+# 处理返回的节点和边的数据
+def build_nodes_d3(nodes):
+    result = []
+    for node in nodes:
+        new = build_node_d3(node)
+        result.append(new)
+    return result
+
+# 处理返回的节点和边的数据
+def build_edge_d3(relationRecord):
+    data = {"source": int(relationRecord['id(m)']),
+            "target": int(relationRecord['id(n)']),
+            "type": relationRecord['Type(r)']}
+
+    return data
+
+# 处理返回的节点和边的数据
+def build_edges_d3(edges):
+    result = []
+    for edge in edges:
+        new = build_edge_d3(edge)
+        result.append(new)
+    return result
+
+# 加载全部节点和边
+def load_graph_d3():
+    # print(request)
+    neo_graph = get_graph()
+    result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
+    result_links = neo_graph.run("MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)").data()
+    nodes = []
+    links = []
+    for result in result_nodes:
+        nodes.append(load_search_node(result['id(n)']))
+
+    for result in result_links:
+        links.append(result)
+
+
+    print("load_graph_d3" )
+    print(nodes)
+    nodes2 = build_nodes_d3(nodes)
+    links2 = build_edges_d3(links)
+    return ({"nodes": nodes2, "links": links2})
+
+# 查找节点边以及周围的边
+def load_search_graph_d3(id):
+    neo_graph = get_graph()
+    results1 = neo_graph.run(
+        "match (m)-[r]->(n) where id(m)= " + str(id) + " return m,id(m),Type(r),id(r),n,id(n)").data()
+    results2 = neo_graph.run(
+        "match (m)-[r]->(n) where id(n)= " + str(id) + " return m,id(m),Type(r),id(r),n,id(n)").data()
+
+    nodes = []
+    links = []
+    for result in results1:
+        nodes.append(load_search_node(result['id(n)']))
+        links.append(result)
+    for result in results2:
+        nodes.append(load_search_node(result['id(m)']))
+        links.append(result)
+    nodes.append(load_search_node(id))
+
+    nodes2 = build_nodes_d3(nodes)
+    links2 = build_edges_d3(links)
+
+    return ({"nodes": nodes2, "links": links2})
 
 
 # 处理返回的节点和边的数据
@@ -114,19 +188,27 @@ def load_search_node(id):
 
 
 # 加载节点上级的边的节点
-def load_up_node(id, relationship):
+def load_up_node(id, relationship=""):
     neo_graph = get_graph()
-    results = neo_graph.run("match (m)-[r:" + relationship + "]->(n) where id(n)= " + str(
-        id) + limit_str2 + " return m,id(m) ORDER BY m.search_times DESC").data()
+    if relationship == "":
+        pass
+    else:
+        relationship = ':' + relationship
+    results = neo_graph.run("match (m)-[r" + relationship + "]->(n) where id(n)= " +
+                            str(id) + " return m,id(m) ORDER BY m.search_times DESC").data()
     nodes = build_nodes(results, 'm')
     return nodes
 
 
 # 查找节点下级的边的节点
-def load_down_node(id):
+def load_down_node(id, relationship=""):
     neo_graph = get_graph()
-    results = neo_graph.run("match (m)-[r]->(n) where id(m)= " + str(
-        id) + limit_str2 + " return n,id(n) ORDER BY m.search_times DESC").data()
+    if relationship == "":
+        pass
+    else:
+        relationship = ':' + relationship
+    results = neo_graph.run("match (m)-[r" + relationship + "]->(n) where id(m)= " + str(
+        id) + " return n,id(n) ORDER BY m.search_times DESC").data()
     nodes = build_nodes(results, 'n')
     # node['data']['id']
     return nodes
@@ -134,7 +216,7 @@ def load_down_node(id):
 
 # 查找节点同级的节点
 def load_peer_node(id):
-    nodes = load_up_node(id, 'Kind_of')
+    nodes = load_up_node(id, 'Part_of')
     results = []
     for node in nodes:
         mids = load_down_node(node['data']['id'])
@@ -172,11 +254,11 @@ def load_search_graph(id):
 
     return ({"nodes": nodes, "edges": edges})
 
-
+str_lim = "where not (n:Concept)"
 # 关键字搜索指定属性 返回ids
 def search_property(search, property):
     neo_graph = get_graph()
-    results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*' RETURN *,id(n) ORDER BY n.id").data()
+    results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*' and not (n:Concept) RETURN *,id(n) ORDER BY n.id").data()
     ids = []
     for result in results:
         ids.append(result['id(n)'])
@@ -370,6 +452,13 @@ def get_nodes_by_labels(label):
         data.append(load_search_node(result['id(n)']))
     return  data
 
+#查找指定标签的所有节点链接
+def get_links_by_labels(label):
+    neo_graph = get_graph()
+    results = neo_graph.run("MATCH (n:" + label + ")-[r]-(m:" + label + ") RETURN Type(r),id(n),id(m)").data()
+    data = []
+    return  results
+
 
 #查找指定指定层数的节点 返回所有节点层数和id BFS算法
 def get_nodes_by_layer(id,layer):
@@ -379,7 +468,7 @@ def get_nodes_by_layer(id,layer):
         if node[1] == layer:
             break
         else:
-            results = load_down_node(node[0])
+            results = load_down_node(node[0],"Part_of")
             for result in results:
                 list.append([int(result['data']['id']),node[1]+1])
 

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>设计师学习</title>
+    {% include 'import_base.html' %}
+    <!-- cytoscape -->
+    <script src="{% static 'cytoscape/cytoscape.min.js' %}"></script>
+</head>
+<body>
+    {% include 'index/index_nav.html' %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="row visible-sm visible-xs">
+                <div  class="col-sm-4 col-xs-12 pull-left" style="left:0;position: absolute; Z-INDEX:2;">
+                    <span><i class="fa fa-list"></i></span>
+                </div>
+            </div>
+            <div class="row visible-sm visible-xs">
+                <div class="col-sm-4 col-xs-12 pull-right" style="right:0;position: absolute; Z-INDEX:2;">
+                    <span><i class="fa fa-list"></i></span>
+                </div>
+            </div>
+            <div class="row visible-md visible-lg">
+                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 pull-right" style="left:0;position: absolute; Z-INDEX:2;">
+                    <div id="result-panel" class="panel panel-info  visible-md visible-lg">
+                        <div id="result-panel-head" class="panel-heading">
+                            <label>搜索结果</label> <span class="pull-right"><i id="result-panel-span" class="fa fa-angle-down"></i></span>
+                        </div>
+                        <input type="hidden" id="current_page" value="4">
+                        <input type="hidden" id="show_per_page" value="5">
+                        <ul id="result-panel-body" class="list-group">
+                        {% for key,value in data.items %}
+                            <li id="{{ key }}" class="list-group-item">
+                                <span class="label label-info">{{ forloop.counter }}</span> {{ value }}
+                            </li>
+                        {% endfor %}
+                         </ul>
+                        <div id="page_navigation">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row visible-md visible-lg">
+                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 pull-right  visible-md visible-lg" style="right:0;position: absolute; Z-INDEX:2;">
+                    <div id="panel" class="panel panel-info">
+                        <div id="panel-head" class="panel-heading">
+                            <label>结果详情</label><span  class="pull-right"><i id="panel-span" class="fa fa-angle-down"></i></span>
+                        </div>
+                        <div id="panel-body" class="panel-body">
+                            <p>...</p>
+                            <form action="{% url 'front:object_detail' %}" method="post">
+                                <input id="panel-input" name="id" type="text" class="hidden">
+                                <button id="panel-button" type="submit" class="btn btn-info center-block">查看详情</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="cy" class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="height: 600px; text-align: initial;background-color: #2aabd2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var elements;
+        var style = [
+            { selector: 'node[label = "Design"]',
+                style: {
+                    'background-color': '#c0fcb0',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                }
+            },
+            { selector: 'node[label = "PatternDesign"]',
+                style: {
+                    'background-color': '#6FB1FC',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
+            },
+            { selector: 'node[label = "StyleDesignExample"]',
+                style: {
+                    'background-color': '#6FB1FC',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
+            },
+            { selector: 'node[label = "StyleDesignExamplePart"]',
+                style: {
+                    'background-color': '#6FB1FC',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
+            },
+            { selector: 'node[label = "StyleDesign"]',
+                style: {
+                    'background-color': '#00fce0',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
+            },
+            { selector: 'node[label = "TechnologyDesign"]',
+                style: {
+                    'background-color': '#39fc9b',
+                    'content': 'data(name)',
+                    'height': '50px',
+                    'width': '50px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
+            },
+            { selector: 'node[label = "Example"]',
+                style: {
+                    'background-color': '#fcee48',
+                    'content': 'data(name)',
+                    'height': '40px',
+                    'width': '40px',
+                    //'text-valign': 'center',
+                    //'text-halign': 'center',
+                    }
+            },
+            { selector: 'edge',
+                style: {
+                    'content': 'data(relationship)',
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle'}
+            },
+            { selector: '.eh-hover',
+                style: {
+                'background-color': 'red'
+                }
+            },
+
+        ];
+        function edit_panel(current_data)
+        {
+            $("#panel-head label:first").text(current_data.property.name);
+            var txt1=$("<p></p>").text(current_data.property.description);  // 使用 jQuery 创建文本
+            $("#panel-body p:first").remove();
+            $("#panel-body").prepend(txt1);        // 追加新元素
+
+            $("#panel-input").attr({"value" : current_data.id,});
+        }
+        function highlight_node(node)
+        {
+            node.animate({
+                      style: {
+                          backgroundColor: 'red',
+                          width: '60px',
+                          height: '60px'
+                      }
+                }, {
+                    duration: 500
+                });
+        }
+        function create_graph(data){
+            elements = data.elements;
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                style:style,
+                elements:elements,
+            });
+            var layout = cy.layout({
+                name: 'concentric',
+                fit:false,
+                padding: 30, // the padding on fit
+                startAngle:4/ 2 * Math.PI, // where nodes start in radians
+                sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+                clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+                equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                minNodeSpacing: 180 ,// min spacing between outside of nodes (used for radius adjustment)
+            });
+            layout.run();
+            return cy;
+        }
+        $(function(){
+        　　$("#{{ ids.0 }}").addClass("active");
+            $("#{{ ids.0 }}").trigger("click");
+        });
+
+        $("li").click(function(){
+            $("li").removeClass("active");
+            $(this).addClass("active");
+            $.post("{% url 'admin:find_node' %}",
+            {
+                id:$(this).attr('id'),
+            },
+                function(data){
+                edit_panel(data.current_data);
+                cy = create_graph(data);
+                str1 = "[id ='" + data.current_data.id + "']";
+                node = cy.nodes(str1);
+                highlight_node(node);
+                cy.on('tap', 'node', function(evt){
+                    var node = evt.target;
+                    console.log( 'tapped ' + node);
+                    $.post("{% url 'admin:find_node' %}",
+                    {
+                        id:node.id(),
+                    },
+                        function(data) {
+                            str = "[id !='" + node.id() + "']";
+                            node = cy.nodes(str);
+                            cy.remove(str);
+                            cy.add(data.elements);
+                            var layout = cy.layout({
+                                name: 'concentric',
+                                fit:false,
+                                padding: 30, // the padding on fit
+                                startAngle:4/ 2 * Math.PI, // where nodes start in radians
+                                sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+                                clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+                                equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+                                minNodeSpacing: 180 ,// min spacing between outside of nodes (used for radius adjustment)
+                            });
+                            layout.run();
+
+                            edit_panel(data.current_data);
+                        });
+                    highlight_node(node);
+                });
+            });
+        });
+        $("#result-panel-span").click(function(){
+            $("#result-panel-body").slideToggle();
+        });
+        $("#panel-span").click(function(){
+            $("#panel-body").slideToggle();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            //每页显示的数目
+            var show_per_page = 10;
+            //获取content对象里面，数据的数量
+            var number_of_items = $('#result-panel-body').children().length;
+            //计算页面显示的数量
+            var number_of_pages = Math.ceil(number_of_items/show_per_page);
+
+            //隐藏域默认值
+            $('#current_page').val(0);
+            $('#show_per_page').val(show_per_page);
+
+            var navigation_html = '<a class="previous_link" href="javascript:previous();">上一页</a>';
+            var current_link = 0;
+            while(number_of_pages > current_link){
+                navigation_html += '<a class="page_link" href="javascript:go_to_page(' + current_link +')" longdesc="' + current_link +'">'+ (current_link + 1) +'</a>';
+                current_link++;
+            }
+            navigation_html += '<a class="next_link" href="javascript:next();">下一页</a>';
+
+            $('#page_navigation').html(navigation_html);
+
+            //add active_page class to the first page link
+            $('#page_navigation .page_link:first').addClass('active_page');
+
+            //隐藏该对象下面的所有子元素
+            $('#result-panel-body').children().css('display', 'none');
+
+            //显示第n（show_per_page）元素
+            $('#result-panel-body').children().slice(0, show_per_page).css('display', 'block');
+
+        });
+
+        //上一页
+        function previous(){
+            new_page = parseInt($('#current_page').val()) - 1;
+            //if there is an item before the current active link run the function
+            if($('.active_page').prev('.page_link').length==true){
+                go_to_page(new_page);
+            }
+
+        }
+        //下一页
+        function next(){
+            new_page = parseInt($('#current_page').val()) + 1;
+            //if there is an item after the current active link run the function
+            if($('.active_page').next('.page_link').length==true){
+                go_to_page(new_page);
+            }
+
+        }
+        //跳转某一页
+        function go_to_page(page_num){
+            //get the number of items shown per page
+            var show_per_page = parseInt($('#show_per_page').val());
+
+            //get the element number where to start the slice from
+            start_from = page_num * show_per_page;
+
+            //get the element number where to end the slice
+            end_on = start_from + show_per_page;
+
+            //hide all children elements of content div, get specific items and show them
+            $('#result-panel-body').children().css('display', 'none').slice(start_from, end_on).css('display', 'block');
+
+            /*get the page link that has longdesc attribute of the current page and add active_page class to it
+            and remove that class from previously active page link*/
+            $('.page_link[longdesc=' + page_num +']').addClass('active_page').siblings('.active_page').removeClass('active_page');
+
+            //update the current page input field
+            $('#current_page').val(page_num);
+        }
+
+        </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+{% extends 'admin/admin_nav.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>添加关系<small>所有</small></h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form action="{% url 'admin:add_relationship' %}" method="post">
+                        <div class="form-group  row"><label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">源节点</label>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                <input id="souid" type="text" name="souid" style="display: none">
+                                <input id="sou" list="souname-data" name="souname" class="form-control" AUTOCOMPLETE="off">
+                                <datalist id="souname-data">
+
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div class="form-group  row"><label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">目的节点</label>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                <input id="dstid" type="text" name="dstid" style="display: none">
+                                <input id="dst" list="dstname-data" name="dstname" class="form-control" AUTOCOMPLETE="off">
+                                <datalist id="dstname-data">
+
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group row">
+                                    <label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-form-label">关系</label>
+                                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                        <select class="form-control m-b" name="relationship">
+                                            {% for key,value in relationships.items %}
+                                                <option value={{ key }}>{{ value }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group row">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2">
+                                <button class="btn btn-white btn-sm" type="button">取消</button>
+                                <button class="btn btn-primary btn-sm" type="submit">保存</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function get_search(name,input_id){
+        $.post("{% url 'admin:find_node_name' %}",
+            {
+                name:name,
+            },
+            function(data){
+                $("#"+input_id.list.id).empty();
+                nodes = (data['nodes']);
+                for (var i=0,len=nodes.length; i<len; i++){
+                    $("#"+input_id.list.id).append('<option label='+nodes[i]['id']+' value="'+nodes[i]['name']+'">');
+                }
+            });
+    }
+    $("#sou").keyup(function(){
+        get_search(this.value,this);
+        var datalist = $("#"+this.id+"name-data").children();
+        for(i=0;i<datalist.length;i++){
+            if(this.value == datalist[i].value){
+                console.log(datalist[i].value);
+                $("#"+this.id+"id").attr("value",datalist[i].label);
+            }
+        }
+    });
+    $("#dst").keyup(function(){
+        get_search(this.value,this);
+        var datalist = $("#"+this.id+"name-data").children();
+        for(i=0;i<datalist.length;i++){
+            if(this.value == datalist[i].value){
+                console.log(datalist[i].value);
+                $("#"+this.id+"id").attr("value",datalist[i].label);
+            }
+        }
+    });
+    </script>
+{% endblock %}

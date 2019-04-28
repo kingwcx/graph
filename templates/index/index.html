@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>设计师学习</title>
+    {% include 'import_base.html' %}
+    <!-- cytoscape -->
+    <script src="{% static 'cytoscape/cytoscape.min.js' %}"></script>
+</head>
+<body>
+    {% include 'index/index_nav.html' %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="jumbotron text-center" >
+                <h1>服装设计知识</h1>
+                <h2>简单全面的服装设计知识，让服装设计更加简单</h2>
+                <p class="masthead-button-links">
+                    <a class="btn btn-lg btn-primary btn-shadow" href="{% url 'front:search' %}">Design开始搜索</a>
+                </p>
+                <ul class="masthead-links list-unstyled">
+                    <li>
+                    <a href="#">友情链接</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="container text-center bg-success" >
+                <ul class="list-unstyled list-inline">
+                    <li >
+                        <a class="" href="#">服装领域知识图谱</a>
+                    </li>
+                    <li>|</li>
+                    <li >
+                        <a href="#">服装面料信息</a>
+                    </li>
+                    <li >
+                        <a href="#">服装流行趋势</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="container text-center">
+                <div>
+                    <h2>相关款式设计实例推荐</h2>
+                    <p>设计作品来自网络，如有侵权，请联系下架</p>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-8 bg-success">
+                    <div class="row text-right">
+                        <a href="{% url 'front:example_list' %}">查看更多 <i class="fa fa-align-right"></i></a>
+                    </div>
+                    <div class="row">
+                        {% for example in style_examples %}
+                            {% if forloop.counter0 < 4 %}
+                                <div class="col-sm-6 col-md-6 col-lg-3 " >
+                                    <div class="thumbnail bg-success">
+                                        <div  style="height: 280px;">
+                                            <div >
+                                                <h3>
+                                                    <a href="{% url 'front:object_detail' id=example.id %}" >
+                                                        {% if example.property.name|length > 10 %}
+                                                            <h3>{{ example.property.name|truncatechars:10 }}...</h3>
+                                                        {% else %}
+                                                           <h3>{{ example.property.name }}</h3>
+                                                        {% endif %}
+
+                                                        <small>by @{{ example.property.designer }}</small>
+                                                    </a>
+                                                </h3>
+                                                <br><br>
+                                                <a href="{% url 'front:object_detail' id=example.id %}" class="thumbnail">
+                                                    {% if example.property.images == "[]" %}
+
+                                                    {% else %}
+                                                        <img class="img-thumbnail" src="{{ example.property.images.0.src }}" alt="{{ example.property.images.0.alt }}"
+                                                         style="height: 130px">
+                                                    {% endif %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="container text-center">
+                <div>
+                    <h2>著名服装设计师推荐</h2>
+                    <p>设计作品来自网络，如有侵权，请联系下架</p>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-8 bg-success">
+                    <div class="row text-right">
+                        <a href="http://www.eeff.net/wechatarticle-320623.html">查看更多 <i class="fa fa-align-right"></i></a>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-6 col-lg-3 " >
+                            <div class="thumbnail bg-success">
+                                <div  style="height: 280px;">
+                                    <div >
+                                        <h3>
+                                            <a href="https://baike.baidu.com/item/%E4%B8%89%E5%AE%85%E4%B8%80%E7%94%9F/15982" >
+                                                三宅一生
+                                            </a>
+                                        </h3>
+                                        <br><br>
+                                        <a href="" class="thumbnail">
+                                            <img class="img-thumbnail"
+                                                 src="https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=df0d1d77aed3fd1f2204aa6851274e7a/e824b899a9014c083380a6fc0c7b02087bf4f434.jpg" alt=""
+                                             style="height: 130px">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-6 col-lg-3 " >
+                            <div class="thumbnail bg-success">
+                                <div  style="height: 280px;">
+                                    <div >
+                                        <h3>
+                                            <a href="https://baike.baidu.com/item/%E5%B7%9D%E4%B9%85%E4%BF%9D%E7%8E%B2/4522060" >
+                                                川久保玲
+                                            </a>
+                                        </h3>
+                                        <br><br>
+                                        <a href="" class="thumbnail">
+                                            <img class="img-thumbnail"
+                                                 src="https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=99aefc3d0f23dd54357eaf3ab060d8bb/b151f8198618367a8809ff8428738bd4b21ce5e3.jpg" alt=""
+                                             style="height: 130px">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-6 col-lg-3 " >
+                            <div class="thumbnail bg-success">
+                                <div  style="height: 280px;">
+                                    <div >
+                                        <h3>
+                                            <a href="https://baike.baidu.com/item/%E4%B9%94%E6%B2%BB%C2%B7%E9%98%BF%E7%8E%9B%E5%B0%BC" >
+                                                乔治·阿玛尼
+                                            </a>
+                                        </h3>
+                                        <br><br>
+                                        <a href="" class="thumbnail">
+                                            <img class="img-thumbnail"
+                                                 src="https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=e2e8e9f98f35e5dd8421ad8d17afcc8a/5bafa40f4bfbfbed064e3fd472f0f736afc31f01.jpg" alt=""
+                                             style="height: 130px">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-6 col-lg-3 " >
+                            <div class="thumbnail bg-success">
+                                <div  style="height: 280px;">
+                                    <div >
+                                        <h3>
+                                            <a href="https://baike.baidu.com/item/%E5%85%8B%E9%87%8C%E6%96%AF%E6%B1%80%C2%B7%E8%BF%AA%E5%A5%A5/17573273" >
+                                                克里斯汀·迪奥
+                                            </a>
+                                        </h3>
+                                        <br><br>
+                                        <a href="" class="thumbnail">
+                                            <img class="img-thumbnail"
+                                                 src="https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=ae9bb53311d5ad6ebef46cb8e0a252be/9922720e0cf3d7ca074bb181f81fbe096a63a98c.jpg" alt=""
+                                             style="height: 130px">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

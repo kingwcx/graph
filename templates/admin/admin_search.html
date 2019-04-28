@@ -1,0 +1,139 @@
+{% extends 'admin/admin_nav.html' %}
+
+{% block content %}
+    <form action="{% url 'admin:search_node' %}" method="post">
+        <div class="form-group row">
+            <div class="col-lg-4 col-md-6 col-sm-8 col-xs-12 col-lg-offset-4 col-md-offset-3 col-sm-offset-2">
+                <div class="input-group"><input type="text" name="search" class="form-control" value="{{ search }}">
+                    <span class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>搜索</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>搜索结果 </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                {% if data == None %}
+                                    <p>没有相关结果</p>
+                                {% endif %}
+                                    <ul class="list-group clear-list m-t">
+                                        {% for key,value in data.items %}
+                                            <li id="{{ key }}" class="list-group-item fist-item">
+                                            <span class="label label-success">{{ forloop.counter }}</span> {{ value }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9 col-md-8 col-sm-6 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div id="detail-ibox" class="ibox ">
+                        <div id="detail-ibox-title" class="ibox-title">
+                            <h5 id="detail-ibox-title-h5" >结果详情 </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div id="detail-ibox-body" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    {% if data == None %}
+                                        <p>没有相关结果</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="detail-ibox-foot" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <form action="{% url 'admin:edit_node_view_post' %}" method="post">
+                                        <input class="hidden" id="detail-ibox-input" name="id" type="text" style="display: none">
+                                        <button id="detail-ibox-button" type="submit" class="btn btn-info center-block" style="display: none">修改节点</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div id="graph-ibox" class="ibox ">
+                        <div id="graph-ibox-title" class="ibox-title">
+                            <h5 id="graph-ibox-title-h5" >图谱展示 </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div id="graph-ibox-body" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="graph-ibox-foot" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <script>
+    $(function(){
+        if(document.getElementById("{{ ids.0 }}"))
+        {
+        $("#{{ ids.0 }}").trigger("click");
+        }
+    });
+    $("li").click(function() {
+        $.post("{% url 'admin:find_node' %}",
+        {
+            id:$(this).attr('id'),
+        },
+        function(data){
+            $('#detail-ibox-button').css("display","");
+            current_data = data.current_data;
+            $('#detail-ibox-title-h5').text(current_data.property.name);
+            $("#detail-ibox-body").empty();
+            var txt=$("<p></p>").text(current_data.property.description);
+            $('#detail-ibox-body').append(txt);
+            $('#detail-ibox-input').attr({"value" : current_data.id,});
+            for (var key in data.current_data.property) {
+                 console.log(key);//得到键
+                 console.log(data.current_data.property[key]);//得到键对应的值
+            }
+        });
+    });
+    </script>
+
+{% endblock %}

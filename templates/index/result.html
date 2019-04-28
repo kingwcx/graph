@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>设计师学习</title>
+    {% include 'import_base.html' %}
+    <!-- cytoscape -->
+    <script src="{% static 'cytoscape/cytoscape.min.js' %}"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="{% static 'bootstrap/jquery/highlight.js' %}"></script>
+</head>
+<body>
+    {% include 'index/index_nav.html' %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <font>已经为您搜索</font>
+            {% for key in keys.0 %}
+                <font class="key">{{ key }}</font>
+            {% endfor %}
+            <font>相关结果</font>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="row visible-sm visible-xs">
+                <div  class="col-sm-4 col-xs-12 pull-left" style="left:0;position: absolute; Z-INDEX:2;">
+                    <span><i class="fa fa-list"></i></span>
+                </div>
+            </div>
+            <div class="row visible-sm visible-xs">
+                <div class="col-sm-4 col-xs-12 pull-right" style="right:0;position: absolute; Z-INDEX:2;">
+                    <span><i class="fa fa-list"></i></span>
+                </div>
+            </div>
+            <div class="row visible-md visible-lg">
+                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 pull-right" style="left:0;position: absolute; Z-INDEX:2;">
+                    <div id="result-panel" class="panel panel-info  visible-md visible-lg">
+                        <div id="result-panel-head" class="panel-heading">
+                            <label>搜索结果</label> <span class="pull-right"><i id="result-panel-span" class="fa fa-angle-down"></i></span>
+                        </div>
+                        <input type="hidden" id="current_page" value="4">
+                        <input type="hidden" id="show_per_page" value="5">
+                        <ul id="result-panel-body" class="list-group">
+                        {% for key,value in data.items %}
+                            <li id="{{ key }}" class="list-group-item">
+                                <span class="label label-info">{{ forloop.counter }}</span> {{ value }}
+                            </li>
+                        {% endfor %}
+                         </ul>
+                        <div id="page_navigation">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row visible-md visible-lg">
+                <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 pull-right  visible-md visible-lg" style="right:0;position: absolute; Z-INDEX:2;">
+                    <div id="panel" class="panel panel-info">
+                        <div id="panel-head" class="panel-heading">
+                            <label>结果详情</label><span  class="pull-right"><i id="panel-span" class="fa fa-angle-down"></i></span>
+                        </div>
+                        <div id="panel-body" class="panel-body">
+                            <p>...</p>
+                            <form action="{% url 'front:object_detail' %}" method="post">
+                                <input id="panel-input" name="id" type="text" class="hidden">
+                                <button id="panel-button" type="submit" class="btn btn-info center-block">查看详情</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="svg" class="row">
+                <svg></svg>
+            </div>
+        </div>
+    </div>
+    <style>.highlight{color: #FF0000;} </style>
+    <script>
+        function edit_panel(current_data)
+        {
+            $("#panel-head label:first").text(current_data.property.name);
+            var txt1=$("<p></p>").text(current_data.property.description);  // 使用 jQuery 创建文本
+            $("#panel-body p:first").remove();
+            $("#panel-body").prepend(txt1);        // 追加新元素
+
+            $("#panel-input").attr({"value" : current_data.id,});
+        }
+        function create_graph(data){
+            console.log("create");
+
+            //create an object-include some data
+            //this is an another way to create a javascript object
+            var defaultConfig = {
+                data:{"nodes":[],"links":[]},//critical data set
+                windowWidth:window.innerWidth,
+                windowHeight:window.innerHeight,
+                defaultLinkDistance:200
+            };
+            //because the initial "data" is null,
+            //so you need use jquery syntax "extend" to merge the json data
+            //below,merge "data" into "defaultWindow"
+            //"true" mean do not cover
+            //details see jquery API document
+            $.extend(true,defaultConfig,data);
+            //so now we get the json file that we need
+            //no let`s begin,transform json file to force graph data
+            //but first ,we need to get "svg"
+            var svg = d3.select("svg");
+
+
+            svg.attr("width",defaultConfig.windowWidth);
+            svg.attr("height",defaultConfig.windowHeight);
+            defaultConfig.data.links.forEach(function(e){
+                if(typeof e.source=="number"&&typeof e.target=="number"){
+                    var sourceNode = defaultConfig.data.nodes.filter(function(n){
+                        return n.id === e.source;
+                    })[0];
+                    var targetNode = defaultConfig.data.nodes.filter(function(n){
+                        return n.id === e.target;
+                    })[0];
+                    e.source = sourceNode;
+                    e.target = targetNode;
+                }
+            });
+
+            //create a force graph
+            var forceSimulation = d3.forceSimulation()
+                .force("link",d3.forceLink())
+                .force("charge",d3.forceManyBody())
+                .force("center",d3.forceCenter(defaultConfig.windowWidth/2,defaultConfig.windowHeight/2));
+            //transform nodes data
+            forceSimulation.nodes(defaultConfig.data.nodes)
+                .on("tick",ticked);
+            //tranform links data
+            forceSimulation.force("link")
+                .links(defaultConfig.data.links)
+                .distance(defaultConfig.defaultLinkDistance);
+            console.log(defaultConfig.data.nodes);
+            console.log(defaultConfig.data.links);
+            //define arrow
+            svg.append("svg:defs")
+                .append("svg:marker")
+                .attr("id", "marker")
+                .attr('viewBox', '0 -5 10 10')
+                .attr("refX", 20)
+                .attr("refY",0)
+                .attr('markerWidth', 10)
+                .attr('markerHeight', 10)
+                .attr('orient', 'auto')
+                .append('svg:path')
+                .attr('d', 'M0,-5L10,0L0,5')
+                .attr("fill","brown");
+            //draw links
+            var links = svg.append("g")
+                .selectAll("line")
+                .data(defaultConfig.data.links)
+                .enter()
+                .append("line")
+                .attr("x1",function(n){return n.source.x})
+                .attr("y1",function(n){return n.source.y})
+                .attr("x2",function(n){return n.target.x})
+                .attr("y2",function(n){return n.target.y})
+                .attr("stroke","brown")
+                .attr("stroke-width",1)
+                .attr("marker-end","url(#marker)");
+            //draw links-text
+            var links_text = svg.append("g")
+                .selectAll("text")
+                .data(defaultConfig.data.links)
+                .enter()
+                .append("text")
+                .attr("x",function(e){
+                    return (e.source.x+e.target.x)/2;
+                })
+                .attr("y",function(e){
+                    console.log(e.source.y+"+"+e.target.y);
+                    return (e.source.y+e.target.y)/2;
+                })
+                .attr("font-size",10);
+                //.text(function(e){return e.type}); //线上文字
+            //draw nodes group = node+node-text
+            var nodes_g = svg.append("g")
+                .selectAll("g")
+                .data(defaultConfig.data.nodes)
+                .enter()
+                .append("g")
+                .attr("transform",function(e){
+                    return "translate("+e.x+","+e.y+")";
+                })
+                .on("click",function(node){
+                    $.post("{% url 'admin:find_node' %}",
+                    {
+                        id:node.id,
+                    },
+                        function(new_data){
+                            var svg = d3.select("#svg");
+                            var del = svg.select("svg");
+                            del.remove();
+                            svg.append("svg");
+                            new create_graph({data:new_data.elements,current_data:new_data.current_data});
+                            edit_panel(new_data.current_data);
+                    });
+                    console.log(node.id);
+                    //单机事件
+                })
+                .call(d3.drag()
+                    .on("start",started)
+                    .on("drag",dragged)
+                    .on("end",ended));
+            //draw nodes
+            nodes_g.append("circle")
+                .attr("r",30)
+                .attr("fill",function(node){
+                    if(node.id == data.current_data.id){
+                        return d3.rgb(255,200,255)
+                    }else{
+                        if(node.label == "Design"){
+                            return d3.rgb(0,255,255)
+                        }else{
+                            return "gray"
+                        }
+                    }
+                });
+            //draw node-text
+            nodes_g.append("text")
+                .attr("text-anchor","middle")
+                .attr("font-size",15
+                )
+                .text(function(e){return e.name});
+            nodes_g.append("svg:title")
+            .text(function(node) {
+                var link=links[node.index];
+                 return "双击查看详情"
+             });
+
+            function started(d){
+                if(!d3.event.active){
+                    forceSimulation.alphaTarget(0.8).restart();
+                }
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+            function dragged(d){
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+            }
+            function ended(d) {
+                if(!d3.event.active){
+                    forceSimulation.alphaTarget(0);
+                }
+                d.fx = null;
+                d.fy = null;
+            }
+            function ticked(){
+                links
+                    .attr("x1",function(n){return n.source.x})
+                    .attr("y1",function(n){return n.source.y})
+                    .attr("x2",function(n){return n.target.x})
+                    .attr("y2",function(n){return n.target.y})
+                links_text
+                    .attr("x",function(e){
+                        return (e.source.x+e.target.x)/2;
+                    })
+                    .attr("y",function(e){
+                        return (e.source.y+e.target.y)/2;
+                    });
+                nodes_g
+                    .attr("transform",function(e){
+                        return "translate("+e.x+","+e.y+")";
+                    })
+            }
+        }
+
+
+        function highlight_key(){
+            var keys = $(".key");
+            keys.each(function () {
+                $('.list-group-item').GL({
+                ocolor: 'red',//设置关键词高亮颜色
+                oshuru: $(this).text()//设置要显示的关键词
+                });
+                $('#panel-body').GL({
+                    ocolor: 'red',//设置关键词高亮颜色
+                    oshuru: $(this).text()//设置要显示的关键词
+                });
+                console.log($(this).text());
+            });
+        }
+        $(function(){
+        　　$("#{{ ids.0 }}").addClass("active");
+            $("#{{ ids.0 }}").trigger("click");
+            highlight_key();//高亮关键字
+        });
+
+        $("li").click(function(){
+            $("li").removeClass("active");
+            $(this).addClass("active");
+            $.post("{% url 'admin:find_node' %}",
+            {
+                id:$(this).attr('id'),
+            },
+                function(data){
+                    console.log(
+                        data.elements
+                    );
+                    var svg = d3.select("#svg");
+                    var del = svg.select("svg");
+                    del.remove();
+                    svg.append("svg");
+                    new create_graph({data:data.elements,current_data:data.current_data});
+                    edit_panel(data.current_data);//修改panel
+                    highlight_key(); //高亮关键字
+
+            });
+        });
+        $("#result-panel-span").click(function(){
+            $("#result-panel-body").slideToggle();
+        });
+        $("#panel-span").click(function(){
+            $("#panel-body").slideToggle();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            //每页显示的数目
+            var show_per_page = 10;
+            //获取content对象里面，数据的数量
+            var number_of_items = $('#result-panel-body').children().length;
+            //计算页面显示的数量
+            var number_of_pages = Math.ceil(number_of_items/show_per_page);
+
+            //隐藏域默认值
+            $('#current_page').val(0);
+            $('#show_per_page').val(show_per_page);
+
+            var navigation_html = '<a class="previous_link" href="javascript:previous();">上一页</a>';
+            var current_link = 0;
+            while(number_of_pages > current_link){
+                navigation_html += '<a class="page_link" href="javascript:go_to_page(' + current_link +')" longdesc="' + current_link +'">'+ (current_link + 1) +'</a>';
+                current_link++;
+            }
+            navigation_html += '<a class="next_link" href="javascript:next();">下一页</a>';
+
+            $('#page_navigation').html(navigation_html);
+
+            //add active_page class to the first page link
+            $('#page_navigation .page_link:first').addClass('active_page');
+
+            //隐藏该对象下面的所有子元素
+            $('#result-panel-body').children().css('display', 'none');
+
+            //显示第n（show_per_page）元素
+            $('#result-panel-body').children().slice(0, show_per_page).css('display', 'block');
+
+        });
+
+        //上一页
+        function previous(){
+            new_page = parseInt($('#current_page').val()) - 1;
+            //if there is an item before the current active link run the function
+            if($('.active_page').prev('.page_link').length==true){
+                go_to_page(new_page);
+            }
+
+        }
+        //下一页
+        function next(){
+            new_page = parseInt($('#current_page').val()) + 1;
+            //if there is an item after the current active link run the function
+            if($('.active_page').next('.page_link').length==true){
+                go_to_page(new_page);
+            }
+
+        }
+        //跳转某一页
+        function go_to_page(page_num){
+            //get the number of items shown per page
+            var show_per_page = parseInt($('#show_per_page').val());
+
+            //get the element number where to start the slice from
+            start_from = page_num * show_per_page;
+
+            //get the element number where to end the slice
+            end_on = start_from + show_per_page;
+
+            //hide all children elements of content div, get specific items and show them
+            $('#result-panel-body').children().css('display', 'none').slice(start_from, end_on).css('display', 'block');
+
+            /*get the page link that has longdesc attribute of the current page and add active_page class to it
+            and remove that class from previously active page link*/
+            $('.page_link[longdesc=' + page_num +']').addClass('active_page').siblings('.active_page').removeClass('active_page');
+
+            //update the current page input field
+            $('#current_page').val(page_num);
+        }
+
+        </script>
+</body>
+</html>

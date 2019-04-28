@@ -1,0 +1,71 @@
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'front:index' %}">服装设计</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            {% if "/index/search/" != request.path  %}
+                <form action="{% url "front:search_action" %}" method="post" class="navbar-form navbar-left">
+                    <div class="form-group">
+                        <input type="text" name="search" class="form-control" placeholder="输入你想要了解的知识">
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+            {% endif %}
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true" aria-expanded="false">学习推荐 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'front:guide' %}">导航推荐</a></li>
+                        <li><a href="{% url 'front:graph' %}">全部图谱</a></li>
+                        <li><a href="{% url 'front:concept' %}">概念纵览</a></li>
+                        <li><a href="{% url 'front:example_list' %}">欣赏设计作品</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true" aria-expanded="false">友情推荐 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">面料信息检索</a></li>
+                        <li><a href="#">服装搭配查看</a></li>
+                        <li><a href="#">流行趋势速知</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    {% if request.user.username != "" %}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true" aria-expanded="false">
+                            {{ request.user.username }}
+                            <span class="caret"></span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'user:login' %}" class="dropdown-toggle" role="button"
+                            aria-haspopup="true" aria-expanded="false">登录
+                        </a>
+                    {% endif %}
+
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'user:profile' %}">个人信息</a></li>
+                        <li><a href="{% url 'user:messages' %}">消息中心</a></li>
+                        <li><a href="{% url 'user:add_object' %}">添加词条</li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'user:logout' %}">注销</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+

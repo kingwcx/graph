@@ -1,0 +1,60 @@
+{% extends 'index_nav_base.html' %}
+
+{% block content %}
+    <div class="row" style="height: 100px"></div>
+    <div class="row justify-content-md-center">
+        <div class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2-2 col-sm-offset-1">
+            <h4 class="text-center">
+                选择你要了解的分类
+            </h4>
+            <div class="slick_demo_2">
+                {% for result in results %}
+                    <div>
+                        <div class="ibox-content" style="margin: 0 10px">
+                            <h2>{{ result.property.name }}</h2>
+                            <p>{{ result.property.description }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function(){
+            $('.slick_demo_2').slick({
+                infinite: true,
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                centerMode: true,
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 3,
+                            slidesToScroll: 3,
+                            infinite: true,
+                            dots: true
+                        }
+                    },
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 2
+                        }
+                    },
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
+        });
+
+    </script>
+{% endblock %}
