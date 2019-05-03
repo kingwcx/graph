@@ -93,6 +93,31 @@
                                 </div>
                             </div>
                         </div>
+                        {% if object.property.video != None and object.property.video != '' %}
+                        <hr>
+                        <div class="row">
+                            <p>相关视频——视频来源：bilibili</p>
+                            <iframe id="video"
+                                    src="{{ object.property.video }}"
+                                    scrolling="no" border="0" frameborder="no" framespacing="10" allowfullscreen="true"
+                                    onload="changeFrameHeight()" width="100%">
+                            </iframe>
+                            <script type="text/javascript">
+                                function changeFrameHeight(){
+                                    var ifm= document.getElementById("video");
+                                    if (ifm.clientWidth > 600){
+                                        ifm.height = ifm.clientWidth * 0.5;
+                                    } else{
+                                        ifm.height = ifm.clientWidth * 0.75;
+                                    }
+
+                                }
+
+                                window.onresize=function(){ changeFrameHeight();};
+                                $(function(){changeFrameHeight();});
+                            </script>
+                        </div>
+                        {% endif %}
 
                     </div>
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
@@ -174,7 +199,7 @@
                                                    <h3>{{ peer_node.data.name }}</h3>
                                                 {% endif %}
                                                 <p>
-                                                    <a href="{% url 'front:object_detail' id=peer_node.data.id %}" class="btn btn-success btn-primary" role="button">查看详情</a>
+                                                    <a href="{% url 'front:object_detail' id=peer_node.data.id %}" class="btn btn-primary" role="button">查看详情</a>
                                                 </p>
                                             </div>
                                         </div>

@@ -55,14 +55,18 @@
                         }
                     });
 
-                    //颜色变化
-                    var colorScale = d3.scaleOrdinal()
-                        .domain(d3.range(7))
-                        .range(d3.schemeCategory10);
+                    function zoomed() {
+                        //svg.select('g').attr("transform", d3.event.transform);
+                        svg.selectAll('g').attr("transform", d3.event.transform);
+                    }
+                    svg.call( d3.zoom()
+                        .scaleExtent( [ 0.1, 10 ] )
+                        .on( "zoom", zoomed ) );
+
                     //create a force graph
                     var forceSimulation = d3.forceSimulation()
                         .force("link",d3.forceLink())
-                        .force("charge",d3.forceManyBody())
+                        .force("charge",d3.forceManyBody().strength(-150))
                         .force("center",d3.forceCenter(defaultConfig.windowWidth/2,defaultConfig.windowHeight/2));
                     //transform nodes data
                     forceSimulation.nodes(defaultConfig.data.nodes)

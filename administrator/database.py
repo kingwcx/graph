@@ -85,11 +85,12 @@ def build_edges_d3(edges):
         result.append(new)
     return result
 
+limit = "where (n:Design) or (n:Example)"
 # 加载全部节点和边
 def load_graph_d3():
     # print(request)
     neo_graph = get_graph()
-    result_nodes = neo_graph.run("MATCH (n) RETURN *,id(n)").data()
+    result_nodes = neo_graph.run("MATCH (n) "+ limit + " RETURN *,id(n)").data()
     result_links = neo_graph.run("MATCH (m)-[r]->(n) RETURN id(m), id(n), Type(r)").data()
     nodes = []
     links = []
@@ -258,7 +259,8 @@ str_lim = "where not (n:Concept)"
 # 关键字搜索指定属性 返回ids
 def search_property(search, property):
     neo_graph = get_graph()
-    results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*' and not (n:Concept) RETURN *,id(n) ORDER BY n.id").data()
+    results = neo_graph.run("MATCH (n) WHERE n." + property + " =~ '.*" + search + ".*' "
+                                "and ( (n:Design) or (n:Example)) RETURN *,id(n) ORDER BY n.id").data()
     ids = []
     for result in results:
         ids.append(result['id(n)'])
