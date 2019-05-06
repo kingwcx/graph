@@ -31,7 +31,8 @@ class IndexView(View):
 	#new = Basic(name="色彩").save()
 	def get(self,request,*args,**kwargs):
 		element = json.dumps(load_graph())
-		results = load_down_node(1, 'Instance_of')
+		node = search_property("服装款式设计", 'name')
+		results = load_down_node(node[0]['id(n)'], 'Instance_of')
 		LIST = []
 		for result in results:
 			object = load_search_node(result['data']['id'])
@@ -95,7 +96,7 @@ class SearchActionView(View):
 				i = 0
 				print(nearby_keys_in)
 				for key_s in nearby_keys_in[1]:
-					if key_s > 0.8 and key_s != 1.0:
+					if key_s > 0.75 and key_s != 1.0:
 						nearby_keys.append(nearby_keys_in[0][i])
 						ids.extend(search(nearby_keys_in[0][i]))
 						#print(nearby_keys_in[0][i])
@@ -134,7 +135,8 @@ class SearchResultErrorView(View):
 
 class ExampleList(ListView):
 	def get(self, request, *args, **kwargs):
-		results = load_down_node(1, 'Instance_of')
+		node = search_property("服装款式设计", 'name')
+		results = load_down_node(node[0]['id(n)'], 'Instance_of')
 		LIST =[]
 		for result in results:
 			object = load_search_node(result['data']['id'])

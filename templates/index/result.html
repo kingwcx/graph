@@ -135,6 +135,8 @@
                         return 175;
                     }else if(e.type == "Instance_of"){
                         return 275;
+                    }else if(e.type == "DesignTrend"){
+                        return 300;
                     }else{
                         return 75;
                     }
@@ -195,18 +197,23 @@
                     return "translate("+e.x+","+e.y+")";
                 })
                 .on("click",function(node){
-                    $.post("{% url 'admin:find_node' %}",
-                    {
-                        id:node.id,
-                    },
-                        function(new_data){
-                            var svg = d3.select("#svg");
-                            var del = svg.select("svg");
-                            del.remove();
-                            svg.append("svg");
-                            new create_graph({data:new_data.elements,current_data:new_data.current_data});
-                            edit_panel(new_data.current_data);
-                    });
+                    if((node.label == "Design") || (node.label == "Example")){
+                        $.post("{% url 'admin:find_node' %}",
+                        {
+                            id:node.id,
+                        },
+                            function(new_data){
+                                var svg = d3.select("#svg");
+                                var del = svg.select("svg");
+                                del.remove();
+                                svg.append("svg");
+                                new create_graph({data:new_data.elements,current_data:new_data.current_data});
+                                edit_panel(new_data.current_data);
+
+                        });
+                    }else{
+                        window.location.href="http://www.baidu.com";
+                    }
                     console.log(node.id);
                     //单机事件
                 })
@@ -241,8 +248,10 @@
                     }else{
                         if(node.label == "Design"){
                             return d3.rgb(0,255,255)
-                        }else{
+                        }else if(node.label == "Example"){
                             return "gray"
+                        }else{
+                            return "green"
                         }
                     }
                 });

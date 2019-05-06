@@ -14,7 +14,7 @@ from ast import literal_eval
 # neo4j链接
 def get_graph():
     neo4j = Graph(
-        host="127.0.0.1",  # neo4j 搭载服务器的ip地址
+        host="10.199.157.176",  # neo4j 搭载服务器的ip地址
         http_port=7978,  # neo4j 服务器监听的端口号
         user="neo4j",  # 数据库user name
         password="123456"  # 密码
@@ -115,14 +115,23 @@ def load_search_graph_d3(id):
     results2 = neo_graph.run(
         "match (m)-[r]->(n) where id(n)= " + str(id) + " return m,id(m),Type(r),id(r),n,id(n)").data()
 
+    ids = []
     nodes = []
     links = []
     for result in results1:
-        nodes.append(load_search_node(result['id(n)']))
-        links.append(result)
+        if result['id(n)'] in ids:
+            pass
+        else:
+            ids.append(result['id(n)'])
+            nodes.append(load_search_node(result['id(n)']))
+            links.append(result)
     for result in results2:
-        nodes.append(load_search_node(result['id(m)']))
-        links.append(result)
+        if result['id(m)'] in ids:
+            pass
+        else:
+            ids.append(result['id(m)'])
+            nodes.append(load_search_node(result['id(m)']))
+            links.append(result)
     nodes.append(load_search_node(id))
 
     nodes2 = build_nodes_d3(nodes)
@@ -408,7 +417,10 @@ def delete_node(id):
 # 获得底层所有图片
 def get_img(id):
     imgs = []
-    mids = load_down_node(id)
+    mids = []
+    mids.extend(load_down_node(id,"Instance_of"))
+    mids.extend(load_down_node(id,"Part_of"))
+    mids.extend(load_down_node(id,"Kind_of"))
     if mids == []:
         return []
     for mid in mids:

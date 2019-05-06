@@ -241,6 +241,7 @@ class FindByIdInterface(View):
         id = request.POST.get('id')
         #print(id)
         elements = load_search_graph_d3(id)
+        #print(elements)
         current_data = load_search_node(id)
         data = {'current_data':current_data,'elements':elements}
 
