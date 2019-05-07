@@ -14,7 +14,7 @@ from ast import literal_eval
 # neo4j链接
 def get_graph():
     neo4j = Graph(
-        host="127.0.0.1",  # neo4j 搭载服务器的ip地址
+        host="10.199.157.176",  # neo4j 搭载服务器的ip地址
         http_port=7978,  # neo4j 服务器监听的端口号
         user="neo4j",  # 数据库user name
         password="123456"  # 密码

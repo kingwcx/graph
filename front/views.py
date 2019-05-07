@@ -224,7 +224,15 @@ class ObjectDetailView(View):
 			down_nodes_kind = load_down_node(id, 'Kind_of')
 			up_nodes_instance = load_up_node(id, 'Instance_of')
 			down_nodes_instance = load_down_node(id, 'Instance_of')
+
+			#其他数据库节点
+			down_nodes_out = []
+			down_nodes_out.extend(load_down_node(id, 'DesignTrend'))
+			down_nodes_out.extend(load_down_node(id, 'FabricDesign'))
+
+			#同级节点
 			peer_nodes = load_peer_node(id)
+
 			other_nodes = {
 				'up_nodes_part':up_nodes_part,
 				'down_nodes_part':down_nodes_part,
@@ -233,6 +241,7 @@ class ObjectDetailView(View):
 				'up_nodes_instance':up_nodes_instance,
 				'down_nodes_instance':down_nodes_instance,
 				'peer_nodes':peer_nodes,
+				'down_nodes_out':down_nodes_out,
 			}
 			#print(detail['property']['img_url'])
 			return render(request, 'index/object_detail.html',
