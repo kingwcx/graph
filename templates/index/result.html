@@ -214,7 +214,13 @@
 
                         });
                     }else{
-                        window.location.href="http://10.199.157.176:8080/nodedetail.html?name="+ node.name;
+                        if((node.label == "Concept"){
+                            window.location.href="http://10.199.157.176:8080/nodedetail.html?name="+ node.name;
+                        }else if(node.label == "schema"){
+                            window.location.href="http://10.199.157.176:5000/?id"+ node.id;
+                        }else{
+
+                        }
                     }
                     console.log(node.id);
                     //单机事件
