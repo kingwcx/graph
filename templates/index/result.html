@@ -137,10 +137,10 @@
                         return 175;
                     }else if(e.type == "Instance_of"){
                         return 275;
-                    }else if(e.type == "DesignTrend"){
-                        return 300;
-                    }else{
+                    }else if(e.type == "Attribute_of"){
                         return 75;
+                    }else{
+                        return 300;
                     }
                 });
             console.log(defaultConfig.data.nodes);
