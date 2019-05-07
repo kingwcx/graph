@@ -160,6 +160,9 @@ class SearchActionView(View):
 						result = load_search_node(id)
 						data[id] = result['property']['name']
 
+					if nearby_keys == []:
+						nearby_keys = None
+
 					#all_keys.append(search_key)
 					return render(request, 'index/result.html',
 								  context={'ids':ids, 'data':data, 'keys':all_keys,'nearby_keys':nearby_keys})

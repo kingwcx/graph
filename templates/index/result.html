@@ -18,11 +18,13 @@
                 <font class="key" style="color: red">{{ key }}</font>
             {% endfor %}
             <font>相关结果</font>
-            <font>        ，同时为您搜索</font>
-            {% for key in nearby_keys %}
-                <font class="key" style="color: red">{{ key }}</font>
-            {% endfor %}
-            <font>相关结果</font>
+            {% if nearby_keys != None %}
+                <font>        ，同时为您搜索</font>
+                {% for key in nearby_keys %}
+                    <font class="key" style="color: red">{{ key }}</font>
+                {% endfor %}
+                <font>相关结果</font>
+            {% endif %}
         </div>
     </div>
     <div class="row">
