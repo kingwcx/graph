@@ -69,6 +69,58 @@ class SearchView(View):
 
 #search操作
 class SearchActionView(View):
+	def get(self,request,*args,**kwargs):
+		search_key = request.GET.get("search")
+		if search_key != "":
+			try:
+				ids = []
+				data = {}
+				all_keys_in = synonyms.seg(search_key)
+				ids.extend(search(search_key))
+
+				#print(all_keys)
+				all_keys = []
+				nearby_keys = []
+				nearby_keys_in = [[],[]]
+				i = 0
+				for key_s in all_keys_in[1]:
+					if 'n' in key_s:
+						#print(all_keys[0][i])
+						all_keys.append(all_keys_in[0][i])
+						nearby = synonyms.nearby(all_keys_in[0][i])
+						nearby_keys_in[0].extend(nearby[0])
+						nearby_keys_in[1].extend(nearby[1])
+						ids.extend(search(all_keys_in[0][i]))
+					i+=1
+
+				i = 0
+				print(nearby_keys_in)
+				for key_s in nearby_keys_in[1]:
+					if key_s > 0.75 and key_s != 1.0:
+						nearby_keys.append(nearby_keys_in[0][i])
+						ids.extend(search(nearby_keys_in[0][i]))
+						#print(nearby_keys_in[0][i])
+					i += 1
+
+				#加载详细信息
+				if ids != []:
+					for id in ids:
+						result = load_search_node(id)
+						data[id] = result['property']['name']
+
+					#all_keys.append(search_key)
+					return render(request, 'index/result.html',
+								  context={'ids':ids, 'data':data, 'keys':all_keys,'nearby_keys':nearby_keys})
+				else:
+					print("没有找到你要的内容!")
+					return render(request, 'index/result_error.html', context={'error': "没有找到你要的内容!", 'search':search})
+			except Exception as e:
+				print(e)
+				print("服务器错误！")
+				return render(request, 'index/result_error.html')
+		else:
+			return redirect(reverse('front:search'))
+
 	def post(self,request,*args,**kwargs):
 		search_key = request.POST.get("search")
 		if search_key != "":
