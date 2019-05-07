@@ -20,9 +20,15 @@
                                 <input class="hidden" id="detail-ibox-input" name="id" type="text" value="{{ object.id }}" style="display: none">
                                 <h2>{{ object.property.name }}
                                     <small>
-                                    <button href="" type="submit" role="button" class="btn btn-default btn-sm" >
-                                        <i class="fa fa-edit"></i>编辑
-                                    </button></small>
+                                        <button href="" type="submit" role="button" class="btn btn-default btn-sm" >
+                                            <i class="fa fa-edit"></i>编辑
+                                        </button>
+                                    </small>
+                                    <small>
+                                        <a href="{% url "front:search_action" %}?search={{ object.property.name }}"
+                                           role="button" class="btn btn-default btn-sm">
+                                            <i class="fa fa-cogs"></i>图谱</a>
+                                    </small>
                                 </h2>
                             </form>
                             <p style="text-indent:2em;">{{ object.property.description }}</p>
