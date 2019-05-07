@@ -124,8 +124,8 @@
                         {% if other_nodes.up_nodes_part.0.data.name == None %}
 
                         {% else %}
-                            <p id="p1"><strong>友情推荐</strong><i class="fa fa-angle-down pull-right"></i></p>
-                            <div id="relation2" class="row">
+                            <p id="p4"><strong>友情推荐</strong><i class="fa fa-angle-down pull-right"></i></p>
+                            <div id="relation4" class="row">
                                 {% for out_node in other_nodes.down_nodes_out %}
                                     {% if forloop.counter <= 3 %}
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
@@ -265,6 +265,9 @@
         });
         $("#p3").click(function(){
             $("#relation3").slideToggle();
+        });
+        $("#p4").click(function(){
+            $("#relation4").slideToggle();
         });
         $.ajaxSetup({
             async : false
