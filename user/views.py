@@ -68,21 +68,25 @@ class RegisterView(View):
 			return redirect(reverse('user:register'))
 
 #选择页面
+@method_decorator(login_required(login_url='user:login'),name='dispatch')
 class SelectView(View):
 	def get(self,request,*args,**kwargs):
 		return render(request, 'user/user_select.html')
 
 #个人中心
+@method_decorator(login_required(login_url='user:login'),name='dispatch')
 class ProfileView(View):
 	def get(self,request,*args,**kwargs):
 		return render(request, 'user/user_profile.html')
 
 #个人中心
+@method_decorator(login_required(login_url='user:login'),name='dispatch')
 class MessagesView(View):
 	def get(self,request,*args,**kwargs):
 		return render(request, 'user/user_messages.html')
 
 #学习推荐页面
+@method_decorator(login_required(login_url='user:login'),name='dispatch')
 class StudyGuideView(View):
 	def get(self,request,*args,**kwargs):
 		level = kwargs['level']
@@ -100,10 +104,13 @@ class StudyGuideView(View):
 			return render(request, 'user/user_study_guide_up.html', context={'results':results})
 
 labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计','Example':'成衣实例'}
+labels2 = {'Design':'概念','Example':'实例'}
+
 #用户添加节点页面
+@method_decorator(login_required(login_url='user:login'),name='dispatch')
 class AddObjectView(View):
 	def get(self,request,*args,**kwargs):
-		return render(request, 'user/user_add_object.html', context={'labels':labels})
+		return render(request, 'user/user_add_object.html', context={'labels':labels2})
 	def post(self,request,*args,**kwargs):
 		form = NodeForm(request.POST)
 		if form.is_valid():

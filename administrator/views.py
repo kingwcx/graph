@@ -43,6 +43,9 @@ class AdminLoginView(View):
                     return redirect(reverse('admin:home'))
                 else:
                     return redirect(next_href)
+            else:
+                print(form.errors)
+                return redirect(reverse('admin:login'))
         else:
             print(form.errors)
             return redirect(reverse('admin:login'))
@@ -53,10 +56,13 @@ def AdminLogout(request):
 
 # 管理员主页面
 @method_decorator(login_required(login_url='admin:login'),name='dispatch')
+@method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
 class AdminIndexView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'admin/admin_home.html')
 
+@method_decorator(login_required(login_url='admin:login'),name='dispatch')
+@method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
 class AdminUserListView(View):
     def get(self, request, *args, **kwargs):
         users = User.objects.all()
@@ -69,11 +75,15 @@ class AdminUserListView(View):
         contacts = paginator.get_page(page)  # 当前页并具有处理超出页码范围的状况,页码不是数字返回第一页，超出返回最后一页
         return render(request, 'admin/admin_user_list.html', context={'contacts': contacts, 'pages': pages, 'pagenums': pages_num})
 
+@method_decorator(login_required(login_url='admin:login'),name='dispatch')
+@method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
 class AdminUserDetailView(View):
     def get(self, request, *args, **kwargs):
         user = User.objects.get(id=kwargs['user_id'])
         return render(request, 'admin/admin_user_detail.html', context={"user": user})
 
+@method_decorator(login_required(login_url='admin:login'),name='dispatch')
+@method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
 class AdminVerifyView(View):
     def get(self, request, *args, **kwargs):
         nodes = UserNode.objects.all()
@@ -86,6 +96,8 @@ class AdminVerifyView(View):
         contacts = paginator.get_page(page)  # 当前页并具有处理超出页码范围的状况,页码不是数字返回第一页，超出返回最后一页
         return render(request, 'admin/admin_verify.html', context={'contacts': contacts, 'pages': pages, 'pagenums': pages_num})
 
+@method_decorator(login_required(login_url='admin:login'),name='dispatch')
+@method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
 class AdminVerifyDetailView(View):
     def get(self, request, *args, **kwargs):
         node = UserNode.objects.get(id=kwargs['verify_id'])

@@ -79,17 +79,17 @@
                     console.log(defaultConfig.data.links);
                     //define arrow
                     svg.append("svg:defs")
-                        .append("svg:marker")
-                        .attr("id", "marker")
-                        .attr('viewBox', '0 -5 10 10')
-                        .attr("refX", 20)
-                        .attr("refY",0)
-                        .attr('markerWidth', 10)
-                        .attr('markerHeight', 10)
-                        .attr('orient', 'auto')
-                        .append('svg:path')
-                        .attr('d', 'M0,-5L10,0L0,5')
-                        .attr("fill","brown");
+                    .append("svg:marker")
+                    .attr("id", "marker")
+                    .attr('viewBox', '0 -5 10 10')
+                    .attr("refX", 20)
+                    .attr("refY",0)
+                    .attr('markerWidth', 10)
+                    .attr('markerHeight', 10)
+                    .attr('orient', 'auto')
+                    .append('svg:path')
+                    .attr('d', 'M0,-5L10,0L0,5')
+                    .attr("fill","brown");
                     //draw links
                     var links = svg.append("g")
                         .selectAll("line")
