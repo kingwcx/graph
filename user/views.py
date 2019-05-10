@@ -24,7 +24,13 @@ import json
 """
 class LoginView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'user/login.html')
+		error_type = request.GET.get("error_type")
+		error_info = ""
+		if error_type =="1":
+			error_info = "用户名或密码错误"
+		else:
+			error_info = ""
+		return render(request, 'user/login.html',context={"error_info":error_info})
 
 	def post(self, request, *args, **kwargs):
 		form = LoginForm(request.POST)
@@ -41,7 +47,8 @@ class LoginView(View):
 				else:
 					return redirect(next_href)
 			else:
-				return redirect(reverse('user:login'))
+				error_type = 1
+				return redirect(reverse('user:login')+'?error_type='+str(error_type))
 		else:
 			print(form.errors)
 			return redirect(reverse('user:login'))
@@ -52,7 +59,13 @@ def Logout(request):
 
 class RegisterView(View):
 	def get(self, request, *args, **kwargs):
-		return render(request, 'user/register.html')
+		error_type = request.GET.get("error_type")
+		error_info = ""
+		if error_type == "1":
+			error_info = "用户名已存在！"
+		else:
+			error_info = ""
+		return render(request, 'user/register.html',context={"error_info":error_info})
 
 	def post(self, request, *args, **kwargs):
 		form = RegisterForm(request.POST)
@@ -64,8 +77,9 @@ class RegisterView(View):
 			User.objects.create_user(username, ".@.", password)
 			return redirect(reverse('user:login'))
 		else:
+			error_type = 1
 			print(form.errors.get_json_data())
-			return redirect(reverse('user:register'))
+			return redirect(reverse('user:register')+'?error_type='+str(error_type))
 
 #选择页面
 @method_decorator(login_required(login_url='user:login'),name='dispatch')

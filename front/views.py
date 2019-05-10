@@ -190,7 +190,8 @@ class SearchResultErrorView(View):
 
 class ExampleList(ListView):
 	def get(self, request, *args, **kwargs):
-		node = search_property("服装款式设计", 'name')
+		example = "服装款式设计"
+		node = search_property(example, 'name')
 		results = load_down_node(node[0]['id(n)'], 'Instance_of')
 		LIST =[]
 		for result in results:

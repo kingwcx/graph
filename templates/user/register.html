@@ -13,6 +13,8 @@
 
     <link href="{% static 'admin/css/animate.css' %}" rel="stylesheet">
     <link href="{% static 'admin/css/style.css' %}" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="{% static 'admin/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
 
 </head>
 
@@ -51,7 +53,38 @@
     <script src="{% static 'admin/js/jquery-3.1.1.min.js' %}"></script>
     <script src="{% static 'admin/js/bootstrap.js' %}"></script>
     <script src="{% static 'admin/js/popper.min.js' %}"></script>
+    <!-- Toastr -->
+    <script src="{% static 'admin/js/plugins/toastr/toastr.min.js' %}"></script>
+    <script>
+        //获得get传参
+        function getParam(paramName) {
+            paramValue = "", isFound = !1;
+            if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+                arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+                while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+            }
+            return paramValue == "" && (paramValue = null), paramValue
+        }
+        $(document).ready(function() {
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 10000
+                };
+                error_type = getParam("error_type");
+                error_info = "{{ error_info }}";
+                console.log(error_info);
+                if(error_info!=""){
+                    toastr.warning(error_info, '登录失败！');
+                }else{
 
+                }
+
+            }, 300);
+        })
+    </script>
 </body>
 
 </html>

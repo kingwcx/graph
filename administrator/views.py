@@ -27,7 +27,13 @@ class TestView(View):
 #管理员登陆页面
 class AdminLoginView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'admin/admin_login.html')
+        error_type = request.GET.get("error_type")
+        error_info = ""
+        if error_type == "1":
+            error_info = "用户名或密码错误"
+        else:
+            error_info = ""
+        return render(request, 'admin/admin_login.html',context={"error_info":error_info})
 
     def post(self, request, *args, **kwargs):
         form = LoginForm(request.POST)
@@ -44,11 +50,13 @@ class AdminLoginView(View):
                 else:
                     return redirect(next_href)
             else:
+                error_type = 1
                 print(form.errors)
-                return redirect(reverse('admin:login'))
+                return redirect(reverse('admin:login')+'?error_type='+str(error_type))
         else:
+            error_type = 1
             print(form.errors)
-            return redirect(reverse('admin:login'))
+            return redirect(reverse('admin:login')+'?error_type='+str(error_type))
 
 def AdminLogout(request):
     logout(request)
@@ -114,6 +122,8 @@ class AdminShowNodeView(View):
         return render(request, 'admin/admin_nodes.html', context={"labels": show, "element":element})
 
 # 搜索节点node
+@method_decorator(login_required(login_url='admin:login'),name='dispatch')
+@method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
 class AdminSearchNodeView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'admin/admin_search.html')
