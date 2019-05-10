@@ -136,7 +136,7 @@ class SearchActionView(View):
 				nearby_keys_in = [[],[]]
 				i = 0
 				for key_s in all_keys_in[1]:
-					if 'n' in key_s:
+					if key_s != "uj":
 						#print(all_keys[0][i])
 						all_keys.append(all_keys_in[0][i])
 						nearby = synonyms.nearby(all_keys_in[0][i])

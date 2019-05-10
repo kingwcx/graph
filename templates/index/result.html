@@ -43,9 +43,15 @@
                                 <span class="label label-info">{{ forloop.counter }}</span> {{ value }}
                             </li>
                         {% endfor %}
-                         </ul>
-                        <div id="page_navigation">
+                        </ul>
+                        <div>
+                            <nav aria-label="..." >
+                                <ul class="pagination pagination-sm" id="page_navigation">
+
+                                </ul>
+                            </nav>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -376,13 +382,13 @@
             $('#current_page').val(0);
             $('#show_per_page').val(show_per_page);
 
-            var navigation_html = '<a class="previous_link" href="javascript:previous();">上一页</a>';
+            var navigation_html = '<li><a class="previous_link" href="javascript:previous();">上一页</a></li>';
             var current_link = 0;
             while(number_of_pages > current_link){
-                navigation_html += '<a class="page_link" href="javascript:go_to_page(' + current_link +')" longdesc="' + current_link +'">'+ (current_link + 1) +'</a>';
+                navigation_html += '<li><a class="page_link" href="javascript:go_to_page(' + current_link +')" longdesc="' + current_link +'">'+ (current_link + 1) +'</a></li>';
                 current_link++;
             }
-            navigation_html += '<a class="next_link" href="javascript:next();">下一页</a>';
+            navigation_html += '<li><a class="next_link" href="javascript:next();">下一页</a></li>';
 
             $('#page_navigation').html(navigation_html);
 
