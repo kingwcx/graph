@@ -411,6 +411,8 @@ def delete_relationship(idn, idm, relation):
 # 删除节点  删之前删除关系
 def delete_node(id):
     neo_graph = get_graph()
+    neo_graph.run("MATCH (n)-[r]->(m) WHERE id(n) = " + str(id)  + "  DELETE r")
+    neo_graph.run("MATCH (n)-[r]->(m) WHERE id(m) = " + str(id)  + "  DELETE r")
     neo_graph.run("MATCH (n) WHERE id(n) = " + str(id) + "  DELETE n")
 
 

@@ -69,9 +69,15 @@
                             </div>
                             <div class="row">
                                 <div id="detail-ibox-foot" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <form action="{% url 'admin:edit_node_view_post' %}" method="post">
+                                    <hr>
+                                    <form action="{% url 'admin:edit_node_view_post' %}" method="post" class="form-horizontal">
                                         <input class="hidden" id="detail-ibox-input" name="id" type="text" style="display: none">
                                         <button id="detail-ibox-button" type="submit" class="btn btn-info center-block" style="display: none">修改节点</button>
+                                    </form>
+                                    <hr>
+                                    <form action="{% url 'admin:delete_node' %}" method="post" class="form-horizontal" onsubmit="return sumbit_sure()">
+                                        <input class="hidden" id="detail-ibox-input2" name="id" type="text" style="display: none">
+                                        <button  id="detail-ibox-button2" type="submit" class="btn btn-info center-block" style="display: none">删除节点</button>
                                     </form>
                                 </div>
                             </div>
@@ -79,7 +85,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="visibility: hidden">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div id="graph-ibox" class="ibox ">
                         <div id="graph-ibox-title" class="ibox-title">
@@ -122,12 +128,14 @@
         },
         function(data){
             $('#detail-ibox-button').css("display","");
+            $('#detail-ibox-button2').css("display","");
             current_data = data.current_data;
             $('#detail-ibox-title-h5').text(current_data.property.name);
             $("#detail-ibox-body").empty();
             var txt=$("<p></p>").text(current_data.property.description);
             $('#detail-ibox-body').append(txt);
             $('#detail-ibox-input').attr({"value" : current_data.id,});
+            $('#detail-ibox-input2').attr({"value" : current_data.id,});
             for (var key in data.current_data.property) {
                  console.log(key);//得到键
                  console.log(data.current_data.property[key]);//得到键对应的值
@@ -136,4 +144,14 @@
     });
     </script>
 
+    <script>
+    function sumbit_sure(){
+        var gnl=confirm("确定要删除?");
+        if (gnl==true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    </script>
 {% endblock %}

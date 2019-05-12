@@ -49,5 +49,10 @@ urlpatterns = [
 	path('user/detail/<int:user_id>', views.AdminUserDetailView.as_view(), name='user_detail'),
 	path('verify', views.AdminVerifyView.as_view(), name='verify'),
 	path('verify/detail/<int:verify_id>', views.AdminVerifyDetailView.as_view(), name='verify_detail'),
+	path('verify/confirm/', views.confirm_node, name='verify_confirm'),
+	path('verify/deny/', views.deny_node, name='verify_deny'),
+
+	#删除节点
+	path('node/delete/', views.delete_node_interface, name='delete_node'),
 
 ]

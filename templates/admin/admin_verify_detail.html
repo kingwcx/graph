@@ -1,5 +1,58 @@
 {% extends 'admin/admin_nav.html' %}
 
 {% block content %}
-    验证详情
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>详细操作 </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-md-12">
+                        <h2 class="font-bold m-b-xs">
+                            {{ node.name }}
+                        </h2>
+                        <small>一个待验证的节点。</small>
+                        <hr>
+
+                        <h4>简介</h4>
+
+                        <div class="small text-muted">
+                            {{ node.description }}
+                        </div>
+                        <hr>
+                        <h4>其他属性</h4>
+                        <div class="small text-muted">
+                            标签:{{ node.label }}
+                        </div>
+                        {% if node.url != None %}
+                        <div class="small text-muted">
+                            url:{{ node.url }}
+                        </div>
+                        {% endif %}
+                        <div class="text-right">
+                            <div class="btn-group">
+                                <form action="{% url 'admin:verify_confirm' %}" method="post">
+                                    <input type="text" name="id" value="{{ node.id }}" style="visibility: hidden">
+                                    <button type="submit" class="btn btn-white btn-sm"><i class="fa fa-star"></i> 确认加入 </button>
+                                </form>
+                                <form action="{% url 'admin:verify_deny' %}" method="post">
+                                    <input type="text" name="id" value="{{ node.id }}" style="visibility: hidden">
+                                    <button type="submit" class="btn btn-white btn-sm"><i class="fa fa-envelope"></i> 拒绝 </button>
+                                </form>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

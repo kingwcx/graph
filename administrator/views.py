@@ -104,12 +104,41 @@ class AdminVerifyView(View):
         contacts = paginator.get_page(page)  # 当前页并具有处理超出页码范围的状况,页码不是数字返回第一页，超出返回最后一页
         return render(request, 'admin/admin_verify.html', context={'contacts': contacts, 'pages': pages, 'pagenums': pages_num})
 
+
+#管理员审核详情
 @method_decorator(login_required(login_url='admin:login'),name='dispatch')
 @method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
 class AdminVerifyDetailView(View):
     def get(self, request, *args, **kwargs):
         node = UserNode.objects.get(id=kwargs['verify_id'])
         return render(request, 'admin/admin_verify_detail.html', context={"node": node})
+
+#同意添加节点
+def confirm_node(request):
+    id = request.POST.get('id')
+    print(id)
+    node = UserNode.objects.get(id=id)
+    data = {}
+    data['name'] = node.name
+    data['english'] = node.english
+    data['description'] = node.description
+    add_node(data,node.label)
+    node.delete()
+    return redirect(reverse('admin:verify'))
+
+#拒绝添加节点
+def deny_node(request):
+    id = request.POST.get('id')
+    print(id)
+    node = UserNode.objects.get(id=id)
+    node.delete()
+    return redirect(reverse('admin:verify'))
+
+#删除节点
+def delete_node_interface(request):
+    id = request.POST.get('id')
+    delete_node(id)
+    return redirect(reverse('admin:search_node'))
 
 
 show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
@@ -152,6 +181,7 @@ class AdminSearchNodeView(View):
 
 # 标签清单
 labels = {'Style': '款式','Pattern': '制版','Technology': '工艺','Design':'服装设计','Example':'成衣实例'}
+labels2 = {'Design': '概念','Example':'实例'}
 show_labels = {'Design': '服装设计','Style': '款式','Patternmaking': '制版','Technology': '工艺'}
 
 relationships = {'Kind_of': 'Kind_of','Part_of': 'Part_of','Instance_of': 'Instance_of','Attribute_of': 'Attribute_of',
@@ -166,7 +196,7 @@ def ajax_lable_list(request):
 # 添加节点页面node
 class AdminAddNodeView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'admin/admin_add_node.html', context={"labels": labels})
+        return render(request, 'admin/admin_add_node.html', context={"labels": labels2})
 
 # 添加关系页面relation
 class AdminAddRelationshipView(View):
