@@ -157,7 +157,7 @@ class AddObjectView(View):
             user_id = request.user.id
             node = UserNode(name=name, description=description, english=english, label=label, url=url, user_id=user_id)
             node.save()
-            return redirect(reverse('user:profile'))
+            return redirect(reverse('user:messages'))
         else:
             print(form.errors.get_json_data())
             print(form.get_errors())

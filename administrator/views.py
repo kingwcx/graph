@@ -124,7 +124,7 @@ def confirm_node(request):
     data['description'] = node.description
     add_node(data,node.label)
     node.delete()
-    return redirect(reverse('admin:verify'))
+    return redirect(reverse('admin:verify')+ '?message=' + "审核同意成功！")
 
 #拒绝添加节点
 def deny_node(request):
@@ -132,13 +132,13 @@ def deny_node(request):
     print(id)
     node = UserNode.objects.get(id=id)
     node.delete()
-    return redirect(reverse('admin:verify'))
+    return redirect(reverse('admin:verify') + '?message=' + "审核拒绝成功！")
 
 #删除节点
 def delete_node_interface(request):
     id = request.POST.get('id')
     delete_node(id)
-    return redirect(reverse('admin:search_node'))
+    return redirect(reverse('admin:search_node')+ '?message=' + "删除节点成功！")
 
 
 show = {'': '全部','People': '人物','Work': '作品','Style': '风格','Process': '设计过程'}
@@ -251,7 +251,7 @@ class AdminAddNodeInterface(View):
             label = form.cleaned_data.get('label')
             data = {'name':name,'english':english,'description':description}
             add_node(data,label)
-            return redirect(reverse('admin:knowledge_graph'))
+            return redirect(reverse('admin:knowledge_graph') + '?message=' + "添加节点成功！")
         else:
             print(form.errors.get_json_data())
             print(form.get_errors())
@@ -358,7 +358,7 @@ class AdminAddRelationshipInterface(View):
                 dstid = form.cleaned_data.get('dstid')
                 relationship = form.cleaned_data.get('relationship')
                 add_relationship(souid,dstid,relationship)
-                return redirect(reverse('admin:knowledge_graph'))
+                return redirect(reverse('admin:knowledge_graph') + '?message=' + "添加关系成功！")
             else:
                 print(form.errors.get_json_data())
                 print(form.get_errors())

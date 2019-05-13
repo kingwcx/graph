@@ -307,6 +307,8 @@
     <!-- ChartJS-->
     <script src="{% static 'admin/js/plugins/chartJs/Chart.min.js' %}"></script>
 
+    <!-- Toastr -->
+    <script src="{% static 'admin/js/plugins/toastr/toastr.min.js' %}"></script>
     <script>
         $(document).ready(function(){
             GetMmessage();
@@ -328,14 +330,11 @@
     </script>
     <script>
         //获得get传参
-        function getParam(paramName) {
-            paramValue = "", isFound = !1;
-            if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
-                arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
-                while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
-            }
-            return paramValue == "" && (paramValue = null), paramValue
-        }
+         String.prototype.GetValue= function(parm) {
+           var reg = new RegExp("(^|&)"+ parm +"=([^&]*)(&|$)");
+           var r = this.substr(this.indexOf("\?")+1).match(reg);
+           if (r!=null) return decodeURI(r[2]); return null;
+         };
         $(document).ready(function() {
             setTimeout(function () {
                 toastr.options = {
@@ -344,11 +343,11 @@
                     showMethod: 'slideDown',
                     timeOut: 10000
                 };
-                error_type = getParam("error_type");
-                error_info = "{{ error_info }}";
-                console.log(error_info);
-                if(error_info!=""){
-                    toastr.warning(error_info, '登录失败！');
+                var url = window.location.href;
+                message = url.GetValue("message");
+                console.log(message);
+                if(message != undefined){
+                    toastr.success(message, '操作成功！');
                 }else{
 
                 }
