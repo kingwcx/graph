@@ -42,7 +42,7 @@ class UserNode(models.Model):
 	creat_time = models.DateTimeField(blank=True, auto_now_add=True)
 
 	# 多对一外键
-	user = models.ForeignKey(User,on_delete=models.CASCADE)
+	user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='user_node')
 
 	class Meta:
 		db_table = 'user_node'

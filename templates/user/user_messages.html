@@ -9,7 +9,46 @@
     {% include 'index/index_nav.html' %}
     <div class="row">
         <div class="col-lg-12 col-md-12">
-            设计师信息页面
+            <div class="row">
+                <div class="col-lg-3 col-md-3"></div>
+                <div class="col-lg-7 col-md-7">
+                    <div class="page-header">
+                      <h1>消息中心 <small>{{ request.user.username }}</small></h1>
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                        <table class="table table-hover">
+                            <caption>待审核节点</caption>
+                            <tbody>
+                            <tr>
+                                <th class="col-md-4">提交时间</th>
+                                <th class="col-md-4">名字</th>
+                                <th class="col-md-2">类型</th>
+                                <th class="col-md-2">操作</th>
+                            </tr>
+                            {% for node in request.user.user_node.all %}
+                                <tr>
+                                    <td class="col-md-4">{{ node.creat_time.year }}年
+                                        {{ node.creat_time.month }}月
+                                        {{ node.creat_time.day }}日
+                                        {{ node.creat_time.time }}
+                                    </td>
+                                    <td class="col-md-4">{{ node.name }}</td>
+                                    <td class="col-md-2">节点</td>
+                                    <td class="col-md-2">
+                                        <form action="{% url 'user:node_deny' %}" method="post">
+                                            <input type="hidden" name="id" value="{{ node.id }}">
+                                            <button type="submit" class="btn btn-warning btn-xs">撤销</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>

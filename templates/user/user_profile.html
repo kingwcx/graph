@@ -9,7 +9,45 @@
     {% include 'index/index_nav.html' %}
     <div class="row">
         <div class="col-lg-12 col-md-12">
-            设计师信息页面
+            <div class="row">
+                <div class="col-lg-3 col-md-3"></div>
+                <div class="col-lg-7 col-md-7">
+                    <div class="page-header">
+                      <h1>个人中心 <small>{{ request.user.username }}</small></h1>
+                    </div>
+                    <div class="row">
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <td>用户名</td>
+                                    <td>{{ request.user.username }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                data-toggle="modal" data-target=".bs-example-modal-lg">修改</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>密码</td>
+                                    <td>安全保护中</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                data-toggle="modal" data-target=".bs-example-modal-lg">修改</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>注册时间</td>
+                                    <td>{{ user.date_joined.year }}年
+                                        {{ user.date_joined.month }}月
+                                        {{ user.date_joined.day }}日
+                                        {{ user.date_joined.time }}
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
