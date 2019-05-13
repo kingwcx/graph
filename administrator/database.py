@@ -495,3 +495,9 @@ def get_nodes_by_layer(id,layer):
     #         ids.append(node[0])
 
     return list
+
+def count_graph():
+    neo_graph = get_graph()
+    nodes = neo_graph.run("match (n) return count(n)").data()
+    links = neo_graph.run("match (n)-[r]-(m) return count(r)").data()
+    return {'nodes':nodes[0]['count(n)'],'links':links[0]['count(r)']}

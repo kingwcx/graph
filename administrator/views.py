@@ -72,7 +72,14 @@ def AdminLogout(request):
 @method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
 class AdminIndexView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'admin/admin_home.html')
+        number = count_graph()
+        user_number = User.objects.all().count()
+        node_number = number['nodes']
+        link_number = number['links']
+        user_node = UserNode.objects.all().count()
+        return render(request, 'admin/admin_home.html',
+                      context={'user_number':user_number,'node_number':node_number,
+                               'link_number':link_number,'user_node':user_node})
 
 @method_decorator(login_required(login_url='admin:login'),name='dispatch')
 @method_decorator(permission_required('add_logentry',login_url='admin:login'),name='dispatch')
