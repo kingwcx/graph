@@ -55,4 +55,7 @@ urlpatterns = [
 	#删除节点
 	path('node/delete/', views.delete_node_interface, name='delete_node'),
 
+	#异常处理
+	path('500/', views.Admin500View, name='500'),
+
 ]

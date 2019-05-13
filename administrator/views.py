@@ -24,6 +24,11 @@ class TestView(View):
 """
  视图
 """
+#异常处理
+class Admin500View(View):
+    def get(self, request, *args, **kwargs):
+        return render(request,'admin/500.html')
+
 #管理员登陆页面
 class AdminLoginView(View):
     def get(self, request, *args, **kwargs):
@@ -174,7 +179,7 @@ class AdminSearchNodeView(View):
             except Exception as e:
                 print(e)
                 print("服务器错误！")
-                return redirect(reverse('admin:search_node'))
+                return redirect(reverse('admin:500'))
         else:
             return redirect(reverse('admin:search_node'))
 
@@ -364,7 +369,7 @@ class AdminAddRelationshipInterface(View):
                 print(form.get_errors())
                 return HttpResponse(404)
         except:
-            return HttpResponse("提交了一个错误的参数")
+            return render(request,'admin/500.html')
 
 """上传图片"""
 class AdminUploadImageInterface(View):
